@@ -35,7 +35,7 @@ export const sidebarMenu = [
   },
   { id: 7, label: "Change Password", icon: UserPen, path: "/change-password" },
 
-  { id: 8, label: "Nearby", icon: UserPen, path: "/my-profile" },
+  { id: 8, label: "Nearby", icon: UserPen, path: "/near-by" },
 ];
 
 export default function Sidebar() {

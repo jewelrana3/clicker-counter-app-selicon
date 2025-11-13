@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Sidebar from "@/sidebar/Sidebar";
+import Header from "@/components/share/Header";
 
 export const metadata: Metadata = {
   title: "Clicker Count App",
@@ -16,11 +17,13 @@ export default function RootLayout({
       <aside className="p-2 ">
         <Sidebar />
       </aside>
-      <main className=" flex-1 h-screen">
-        <div className="sticky top-0 z-50">Header here</div>
+      <div className="flex-1 flex flex-col min-h-screen">
+        <div className=" z-50">
+          <Header />
+        </div>
 
-        <div className=" bg-[#FFFFFF] p-5 rounded-2xl ">{children}</div>
-      </main>
+        <div className=" bg-[#FFFFFF] rounded-2xl p-5 flex-1">{children}</div>
+      </div>
     </section>
   );
 }
