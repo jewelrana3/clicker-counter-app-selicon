@@ -12,7 +12,11 @@ export default function NewPassword() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {};
   return (
-    <Form action="/login" className="space-y-5 w-[80%]" onSubmit={handleSubmit}>
+    <Form
+      action="/login"
+      className="space-y-5 sm:w-[80%]"
+      onSubmit={handleSubmit}
+    >
       <Label htmlFor="newPassword" className="block text-md mb-1">
         Password
       </Label>

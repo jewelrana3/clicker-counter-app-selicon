@@ -27,7 +27,7 @@ export default function VerifyOtp() {
           onChange={handleOtpChange}
           pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
         >
-          <InputOTPGroup className="space-x-6">
+          <InputOTPGroup className="space-x-2 sm:space-x-6">
             {[...Array(5)].map((_, i) => (
               <InputOTPSlot
                 key={i}

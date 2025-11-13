@@ -23,7 +23,7 @@ export default function VerifyOtpPage() {
       {/* Login card */}
       <div className="flex flex-col items-center justify-center bg-card sm:p-10 relative">
         <BackButton />
-        <Title>Verification code</Title>
+        <Title className="mt-5">Verification code</Title>
         <p className="text-[#3E464F] text-center w-full sm:w-[60%] text-lg mb-7">
           We sent a reset link to contact@dscode...com <br /> enter 5 digit code
           that is mentioned in the email

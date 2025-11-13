@@ -14,14 +14,14 @@ export default function NewPasswordPage() {
         <Image
           src="/auth/logo.png"
           alt="User Avatar"
-          className=""
+          className="w-60 h-60 lg:w-80 lg:h-80"
           width={350}
           height={350}
         />
       </div>
 
       {/* Login card */}
-      <div className="flex flex-col items-center justify-center bg-card p-10 relative">
+      <div className="flex flex-col items-center justify-center bg-card py-10 sm:p-10 relative">
         <BackButton />
         <Title>Set a new password</Title>
 
