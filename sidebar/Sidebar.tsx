@@ -96,7 +96,7 @@ export default function Sidebar() {
                     item?.label === "Log Out"
                       ? "text-red-600"
                       : isActive
-                      ? "bg-[#E40004] text-white rounded-lg"
+                      ? "bg-[#E40004] text-white rounded-2xl"
                       : "text-gray-800"
                   }`}
                 >

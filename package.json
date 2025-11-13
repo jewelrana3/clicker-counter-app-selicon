@@ -15,6 +15,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "input-otp": "^1.4.2",
+    "jodit-react": "^5.2.38",
     "lucide-react": "^0.553.0",
     "next": "16.0.1",
     "react": "19.2.0",

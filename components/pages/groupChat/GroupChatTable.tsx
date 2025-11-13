@@ -1,16 +1,19 @@
+"use client";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Lock, Unlock } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function GroupChatTable() {
+  const [status, setStatus] = useState<boolean>(true);
   return (
     <Table className="mt-7">
       <TableHeader>
@@ -27,14 +30,14 @@ export default function GroupChatTable() {
       </TableHeader>
       <TableBody>
         <TableRow>
-          <TableCell>1</TableCell>
+          <TableCell>01</TableCell>
           <TableCell>
             <Image
-              src="/path/to/logo.png"
+              src="/group-chat/image.png"
               alt="Logo"
               width={10}
               height={10}
-              className="w-8 h-8 rounded-full"
+              className="w-10 h-10 rounded-full"
             />
           </TableCell>
           <TableCell>John Doe</TableCell>
@@ -44,8 +47,18 @@ export default function GroupChatTable() {
           <TableCell>
             <Badge className="text-md bg-green-600">Active</Badge>
           </TableCell>
-          <TableCell>
-            <button className="text-blue-500 hover:underline">Edit</button>
+          <TableCell className="pl-4">
+            {status ? (
+              <Lock
+                className="text-red-400 cursor-pointer"
+                onClick={() => setStatus((prev) => !prev)}
+              />
+            ) : (
+              <Unlock
+                className="cursor-pointer"
+                onClick={() => setStatus((prev) => !prev)}
+              />
+            )}
           </TableCell>
         </TableRow>
       </TableBody>
