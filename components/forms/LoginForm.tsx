@@ -16,7 +16,11 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {};
   return (
-    <Form action="/login" className="space-y-5 w-[80%]" onSubmit={handleSubmit}>
+    <Form
+      action="/login"
+      className="space-y-5 w-[90%] sm:w-[80%]"
+      onSubmit={handleSubmit}
+    >
       <div>
         <Label htmlFor="email" className="block text-md mb-1">
           Email
@@ -48,17 +52,19 @@ export default function LoginForm() {
           {password ? <EyeOff /> : <Eye />}
         </span>
       </div>
-      <div className="text-right mt-1 flex items-center justify-between">
+      <div className=" mt-1 flex flex-col sm:flex-row sm:items-center justify-between">
         <div className="flex items-center space-x-2">
           <Checkbox id="remember-me" name="remember-me" value="true" />
           <p className="text-color">Remember Password</p>
         </div>
-        <Link
-          href="/forgot-password"
-          className="text-sm hover:underline text-red-600"
-        >
-          Forgot Password
-        </Link>
+        <div>
+          <Link
+            href="/forgot-password"
+            className="text-sm hover:underline text-red-600"
+          >
+            Forgot Password
+          </Link>
+        </div>
       </div>
 
       <Button type="submit" className="w-full">

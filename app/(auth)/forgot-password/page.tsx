@@ -17,14 +17,14 @@ export default function ForgotPassword() {
           alt="User Avatar"
           width={350}
           height={350}
-          className=""
+          className="w-60 h-60 lg:w-80 lg:h-80"
         />
       </div>
 
       {/* Login card */}
-      <div className="flex flex-col items-center justify-center bg-card p-10 relative">
+      <div className="flex flex-col items-center justify-center bg-card sm:p-10 relative">
         <BackButton />
-        <Title> Forgot Password</Title>
+        <Title>Forgot Password</Title>
         <ForgotPasswordForm />
       </div>
     </div>

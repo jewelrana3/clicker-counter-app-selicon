@@ -5,13 +5,14 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import Form from "next/form";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function ForgotPasswordForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {};
   return (
     <Form
       action="/forgot-password"
-      className="space-y-5 w-[80%]"
+      className="space-y-5 w-[90%] sm:w-[80%]"
       onSubmit={handleSubmit}
     >
       <div>
@@ -27,9 +28,11 @@ export default function ForgotPasswordForm() {
         />
       </div>
 
-      <Button type="submit" className="w-full py-2 cursor-pointer">
-        Continue
-      </Button>
+      <Link href="/verify-otp">
+        <Button type="submit" className="w-full py-2 cursor-pointer">
+          Continue
+        </Button>
+      </Link>
     </Form>
   );
 }
