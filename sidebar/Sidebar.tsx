@@ -16,7 +16,7 @@ import Swal from "sweetalert2";
 
 export const sidebarMenu = [
   { id: 1, label: "Analytics", icon: LayoutGrid, path: "/" },
-  { id: 2, label: "Users", icon: User, path: "#" },
+  { id: 2, label: "Users", icon: User, path: "/users" },
   {
     id: 3,
     label: "User Activity",
