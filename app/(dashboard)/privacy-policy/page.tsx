@@ -1,10 +1,11 @@
+import Loading from "@/app/loading";
 import PrivacyPolicy from "@/components/pages/privacy-policy/PrivacyPolicy";
-import React from "react";
+import { Suspense } from "react";
 
 export default function page() {
   return (
-    <div>
+    <Suspense fallback={<Loading />}>
       <PrivacyPolicy />
-    </div>
+    </Suspense>
   );
 }

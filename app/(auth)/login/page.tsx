@@ -1,6 +1,8 @@
+import Loading from "@/app/loading";
 import LoginForm from "@/components/forms/LoginForm";
 import Title from "@/components/share/Title";
 import Image from "next/image";
+import { Suspense } from "react";
 
 export default function LoginPage() {
   return (
@@ -22,7 +24,9 @@ export default function LoginPage() {
       {/* Login card */}
       <div className="flex flex-col items-center justify-center bg-card sm:p-10 ">
         <Title>Login</Title>
-        <LoginForm />
+        <Suspense fallback={<Loading />}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

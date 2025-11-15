@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import JoditEditor from "jodit-react";
 import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 export default function TermsConditionsPage() {
   const editor = useRef(null);
