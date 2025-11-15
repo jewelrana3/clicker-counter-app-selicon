@@ -1,6 +1,6 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import Form from "next/form";
@@ -12,15 +12,12 @@ import { Button } from "../ui/button";
 export default function LoginForm() {
   const [password, setPassword] = useState(false);
   const router = useRouter();
-  const redirect = useSearchParams()?.get("redirect");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {};
+  const handleSubmit = async () => {
+    router.push("/");
+  };
   return (
-    <Form
-      action="/login"
-      className="space-y-5 w-[90%] sm:w-[80%]"
-      onSubmit={handleSubmit}
-    >
+    <Form action={handleSubmit} className="space-y-5 w-[90%] sm:w-[80%]">
       <div>
         <Label htmlFor="email" className="block text-md mb-1">
           Email

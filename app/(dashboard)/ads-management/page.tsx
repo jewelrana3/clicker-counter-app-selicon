@@ -2,7 +2,7 @@ import AdsManagement from "@/components/pages/adsManagement/page";
 
 export default function page() {
   return (
-    <div>
+    <div className="bg-[#FFFFFF]">
       <AdsManagement />
     </div>
   );
