@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const pathnames = [
   { id: 1, label: "Analytics", path: "/" },
-  { id: 2, label: "Users", path: "#" },
+  { id: 2, label: "Users", path: "/users" },
   {
     id: 3,
     label: "User Activity",

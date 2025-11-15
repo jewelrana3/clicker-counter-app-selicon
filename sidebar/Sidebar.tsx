@@ -3,13 +3,17 @@
 import {
   LayoutGrid,
   User,
-  List,
   Shield,
   LogOut,
   UserPen,
   FileTerminal,
   Users,
+  Megaphone,
+  MessagesSquare,
+  MapPinned,
 } from "lucide-react";
+
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Swal from "sweetalert2";
@@ -23,8 +27,8 @@ export const sidebarMenu = [
     icon: Users,
     path: "/user-activity",
   },
-  { id: 4, label: "Ads Management", icon: List, path: "/ads-management" },
-  { id: 14, label: "Group Chat", icon: List, path: "/group-chat" },
+  { id: 4, label: "Ads Management", icon: Megaphone, path: "/ads-management" },
+  { id: 14, label: "Group Chat", icon: MessagesSquare, path: "/group-chat" },
 
   { id: 5, label: "Privacy Policy", icon: Shield, path: "/privacy-policy" },
   {
@@ -35,7 +39,7 @@ export const sidebarMenu = [
   },
   { id: 7, label: "Change Password", icon: UserPen, path: "/change-password" },
 
-  { id: 8, label: "Nearby", icon: UserPen, path: "/near-by" },
+  { id: 8, label: "Nearby Setting", icon: MapPinned, path: "/near-by" },
 ];
 
 export default function Sidebar() {
@@ -67,18 +71,16 @@ export default function Sidebar() {
   return (
     <div className="bg-white rounded-2xl">
       <div className="ml-16 py-2">
-        {/* <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Image
-            src="/logo.png"
+            src="/auth/logo.png"
             alt="Zasulehry"
             width={24}
             height={24}
             className="w-24"
             sizes="100vh"
           />
-          
-        </Link> */}
-        Logo here
+        </Link>
       </div>
       <div
         className="overflow-y-auto scroll-smooth py-4 space-y-2 hide-scrollbar"
