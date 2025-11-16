@@ -14,15 +14,15 @@ export default function RootLayout({
 }>) {
   return (
     <section className="flex space-x-4 bg-[#F4F4F4]">
-      <aside className="p-2 ">
+      <aside className="p- ">
         <Sidebar />
       </aside>
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col">
         <div className=" z-50">
           <Header />
         </div>
 
-        <div className=" bg-[#FFFFFF] rounded-2xl p-5 flex-1">{children}</div>
+        <div className=" bg-[#FFFFFF] rounded-2xl flex-1">{children}</div>
       </div>
     </section>
   );

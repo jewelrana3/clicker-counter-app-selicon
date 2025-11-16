@@ -36,7 +36,7 @@ export default function Header() {
 
   const currentPath = pathnames.find((item) => item.path === pathname);
   return (
-    <div className="flex items-center justify-between h-20">
+    <div className="flex items-center justify-between h-20 pr-4 ">
       <div>
         <Title className="!text-lg !mb-0">{currentPath?.label}</Title>
       </div>

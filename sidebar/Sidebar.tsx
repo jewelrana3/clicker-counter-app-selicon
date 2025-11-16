@@ -69,8 +69,8 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="bg-white rounded-2xl">
-      <div className="ml-16 py-2">
+    <div className="bg-white rounded-2xl h-screen">
+      <div className="ml-16 py-6">
         <Link href="/" className="flex items-center">
           <Image
             src="/auth/logo.png"
@@ -82,11 +82,8 @@ export default function Sidebar() {
           />
         </Link>
       </div>
-      <div
-        className="overflow-y-auto scroll-smooth py-4 space-y-2 hide-scrollbar"
-        style={{ height: "calc(100vh - 56px)" }}
-      >
-        <div className="px-4 space-y-1 text-sm overflow-y-auto ">
+      <div className="">
+        <div className="px-4 text-sm ">
           {sidebarMenu.map((item) => {
             const isActive = pathname === item.path;
 
@@ -94,7 +91,7 @@ export default function Sidebar() {
             return (
               <Link key={item.id} href={item.path}>
                 <div
-                  className={`flex items-center gap-3 px-4 my-2 py-1.5 cursor-pointer font-medium text-[12px] 2xl:text-[15px] ${
+                  className={`flex items-center gap-3 px-4 my-2 py-1.5 cursor-pointer font-medium text-[12px] 2xl:text-[15px] space-y-1 ${
                     item?.label === "Log Out"
                       ? "text-red-600"
                       : isActive
@@ -111,7 +108,7 @@ export default function Sidebar() {
         </div>
         <div
           onClick={handleDelete}
-          className={`flex items-center gap-3 px-4 cursor-pointer font-medium text-[12px] 2xl:text-[15px] text-red-600 ml-4`}
+          className={`flex items-center gap-3 px-4 cursor-pointer font-medium text-[12px] 2xl:text-[15px] text-red-600 ml-4 mt-[40%]`}
         >
           <LogOut className="w-4 h-4 shrink-0" />
           <span className="truncate">Log Out</span>

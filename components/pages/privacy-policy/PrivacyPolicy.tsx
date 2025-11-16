@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
   const [content, setContent] = useState("");
 
   return (
-    <>
+    <div className="mt-[1%]">
       <JoditEditor
         className="break-all"
         ref={editor}
@@ -25,6 +25,6 @@ export default function PrivacyPolicy() {
       <div className="flex items-center justify-center mt-6">
         <Button className="w-[30%]">Save & Change</Button>
       </div>
-    </>
+    </div>
   );
 }

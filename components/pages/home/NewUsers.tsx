@@ -1,4 +1,4 @@
-import React from "react";
+import Link from "next/link";
 
 const users = [
   { type: "User", name: "Md Hassan", id: "2341651561", date: "4/12/2025" },
@@ -23,7 +23,7 @@ export default function UsersHomePage() {
   return (
     <div className="bg-white p-6 rounded-md shadow">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">New Users</h2>
+        <h2 className="text-xl font-medium text-gray-800">New Users</h2>
         <div className="flex items-center space-x-4">
           <span className="flex items-center text-sm">
             <span className="w-2 h-2 rounded-full bg-red-500 mr-1" /> 200
@@ -31,13 +31,16 @@ export default function UsersHomePage() {
           <span className="flex items-center text-sm">
             <span className="w-2 h-2 rounded-full bg-orange-400 mr-1" /> 50
           </span>
-          <a href="#" className="text-green-600 text-sm font-medium">
+          <Link
+            href="/users"
+            className="text-green-600 text-sm font-medium cursor-pointer"
+          >
             See More
-          </a>
+          </Link>
         </div>
       </div>
       <table className="w-full text-sm text-left">
-        <thead className="text-blue-600 font-semibold border-b">
+        <thead className="text-[#17307C] font-semibold border-b">
           <tr>
             <th className="py-2">User type</th>
             <th className="py-2">User Name</th>
