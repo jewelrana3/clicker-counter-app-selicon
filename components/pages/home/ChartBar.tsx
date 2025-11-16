@@ -26,7 +26,7 @@ const data = [
 
 const TinyBarChart = () => {
   return (
-    <div className="w-full rounded-2xl bg-white p-6 border">
+    <div className="w-full rounded-2xl bg-white p-4 border">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl text-gray-800 font-medium">
           Earning Statistics
@@ -46,7 +46,7 @@ const TinyBarChart = () => {
       </div>
 
       {/* 👇 MUST have height to render */}
-      <div className="w-full h-[350px]">
+      <div className="w-full h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <XAxis dataKey="name" />

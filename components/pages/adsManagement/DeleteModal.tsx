@@ -13,7 +13,7 @@ export default function DeleteModal({ trigger }: { trigger: React.ReactNode }) {
       <DialogContent className="bg-white rounded-xl">
         <div className=" mt-5">
           <h3 className="text-xl text-center mb-4 text-gray-700">
-            Are you sure you want to delete <br /> this ad?
+            Are you sure you want to delete <br /> this ads?
           </h3>
 
           {/* Buttons */}
