@@ -72,7 +72,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="">
+    <div className="mt-[4%]">
       <Form action="/profile" onSubmit={handleSubmit}>
         {/* Profile Image */}
         <div className="flex justify-center mb-10 relative">

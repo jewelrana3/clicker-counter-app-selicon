@@ -6,7 +6,7 @@ import UsersHomePage from "@/components/pages/home/NewUsers";
 
 export default function Home() {
   return (
-    <div className="bg-[#F4F4F4] overflow-y-scroll h-[calc(100vh-80px)] p-1">
+    <div className=" overflow-y-scroll h-[calc(100vh-115px)] scroll-hidden">
       <DashboardSummary />
       <div className="grid grid-cols-1 md:grid-cols-[auto_35%] gap-6">
         <LineChartPage />

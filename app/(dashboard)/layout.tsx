@@ -13,16 +13,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section className="flex space-x-4 bg-[#F4F4F4]">
-      <aside className="p- ">
+    <section className="flex space-x-4 bg-[#F4F4F4] ">
+      <aside className="">
         <Sidebar />
       </aside>
       <div className="flex-1 flex flex-col">
-        <div className=" z-50">
+        <div className="z-50">
           <Header />
         </div>
 
-        <div className=" bg-[#FFFFFF] rounded-2xl flex-1">{children}</div>
+        <div className=" bg-[#FFFFFF] rounded-2xl flex-1 p-4">{children}</div>
       </div>
     </section>
   );

@@ -26,7 +26,7 @@ const data = [
 
 const TinyBarChart = () => {
   return (
-    <div className="w-full rounded-2xl bg-white p-6">
+    <div className="w-full rounded-2xl bg-white p-6 border">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl text-gray-800 font-medium">
           Earning Statistics

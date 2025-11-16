@@ -55,8 +55,9 @@ export default function Header() {
               src="/profile.jpg"
               alt="User Avatar"
               width={40}
-              height={40}
-              className="rounded-full"
+              height={50}
+              className="w-10 h-10 rounded-full"
+              sizes="100vh"
             />
             <p className="text-[#333333]">Admin Humphrey</p>
           </div>

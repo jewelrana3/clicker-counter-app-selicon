@@ -11,7 +11,7 @@ import {
 
 export default function ActivityMap() {
   return (
-    <div className="w-full h-[500px] bg-white p-4 rounded-2xl">
+    <div className="w-full h-[500px] bg-white p-4 rounded-2xl border">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-medium text-gray-800">
           Activity Analytics

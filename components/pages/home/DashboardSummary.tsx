@@ -1,5 +1,5 @@
 // DashboardSummary.jsx
-import { MoveUp, Users } from "lucide-react";
+import { MoveUp } from "lucide-react";
 import Image from "next/image";
 
 const stats = [
@@ -29,7 +29,7 @@ export default function DashboardSummary() {
       {stats.map((stat, idx) => (
         <div
           key={idx}
-          className="bg-white  rounded-lg p-5 flex flex-col justify-between shadow-sm"
+          className="bg-white border rounded-lg p-5 flex flex-col justify-between shadow-sm"
         >
           <div className="flex items-center gap-3">
             <Image
