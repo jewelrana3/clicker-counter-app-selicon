@@ -134,3 +134,8 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* sweart alert btn width */
+.swal-btn {
+  width: 100px !important; /* set same width */
+}

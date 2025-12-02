@@ -25,6 +25,11 @@ export default function GroupChatTable() {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+      customClass: {
+        confirmButton: "swal-btn",
+        cancelButton: "swal-btn",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         setStatus((prev) => !prev);

@@ -47,6 +47,10 @@ export default function UserActivity() {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes",
+      customClass: {
+        confirmButton: "swal-btn",
+        cancelButton: "swal-btn",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         const isActive = status.includes(id);
