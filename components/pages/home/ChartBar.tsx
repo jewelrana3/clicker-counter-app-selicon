@@ -51,7 +51,7 @@ const TinyBarChart = () => {
           <BarChart data={data}>
             <XAxis dataKey="name" />
 
-            <Bar dataKey="uv" fill="#E40004" />
+            <Bar dataKey="uv" width={200} fill="#E40004" />
           </BarChart>
         </ResponsiveContainer>
       </div>

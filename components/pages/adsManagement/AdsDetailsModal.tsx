@@ -99,14 +99,14 @@ export default function AdsDetailsModal({
           </div>
 
           {/* Buttons */}
-          <div className="p-6 flex justify-between gap-4">
+          {/* <div className="p-6 flex justify-between gap-4">
             <Button className="w-1/2 py-2 border border-red-500 text-red-500 rounded-full hover:bg-red-50 bg-white">
               Reject
             </Button>
             <Button className="w-1/2 py-2 bg-green-600 text-white rounded-full hover:bg-green-700">
               Confirm
             </Button>
-          </div>
+          </div> */}
         </div>
       </DialogContent>
     </Dialog>

@@ -13,6 +13,7 @@ import { Info, Lock, Unlock } from "lucide-react";
 import Image from "next/image";
 import UsersDetailsModal from "./UsersDetailsModal";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const data = [
   {
@@ -41,14 +42,32 @@ export default function Users() {
   const [status, setStatus] = useState([1, 2]);
   console.log(status);
 
-  const handleStatusChange = (id: number) => {
-    const isActive = status.includes(id);
-    if (isActive) {
-      setStatus(status.filter((item) => item !== id));
-    } else {
-      setStatus([...status, id]);
-    }
+  const hanldeLock = (id: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to block this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const isActive = status.includes(id);
+        if (isActive) {
+          setStatus(status.filter((item) => item !== id));
+        } else {
+          setStatus([...status, id]);
+        }
+        Swal.fire({
+          title: "Blocked!",
+          text: "Your file has been blocked.",
+          icon: "success",
+        });
+      }
+    });
   };
+
   return (
     <Table className="mt-7">
       <TableHeader>
@@ -66,7 +85,7 @@ export default function Users() {
       </TableHeader>
       <TableBody>
         {data.map((item, index) => (
-          <TableRow>
+          <TableRow key={index}>
             <TableCell>0 {index + 1}</TableCell>
             <TableCell className="flex items-center gap-2">
               <Image
@@ -110,12 +129,12 @@ export default function Users() {
                   {status.includes(item.id) ? (
                     <Lock
                       className="text-red-400 cursor-pointer"
-                      onClick={() => handleStatusChange(item.id)}
+                      onClick={() => hanldeLock(item.id)}
                     />
                   ) : (
                     <Unlock
                       className="cursor-pointer"
-                      onClick={() => handleStatusChange(item.id)}
+                      onClick={() => hanldeLock(item.id)}
                     />
                   )}
                 </div>

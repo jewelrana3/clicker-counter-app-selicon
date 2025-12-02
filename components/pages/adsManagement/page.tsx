@@ -48,7 +48,7 @@ export default function AdsManagement() {
       </TableHeader>
       <TableBody>
         {data.map((item, index) => (
-          <TableRow>
+          <TableRow key={index}>
             <TableCell>01</TableCell>
             <TableCell className="flex items-center gap-2">
               <Image
@@ -73,11 +73,11 @@ export default function AdsManagement() {
                 Active
               </Badge>
             </TableCell>
-            <TableCell className="pl-2">
-              <div className="flex items-center space-x-1">
+            <TableCell className="">
+              <div className="flex items-center space-x-3">
                 <AdsDetailsModal
                   trigger={
-                    <div className="text-[#6CA0DC] cursor-pointer">
+                    <div className="text-red-400 cursor-pointer">
                       <Info />
                     </div>
                   }

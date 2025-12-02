@@ -11,9 +11,32 @@ import {
 import { Lock, Unlock } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 export default function GroupChatTable() {
   const [status, setStatus] = useState<boolean>(true);
+
+  const hanldeLock = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to block this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setStatus((prev) => !prev);
+        Swal.fire({
+          title: "Blocked!",
+          text: "Your file has been blocked.",
+          icon: "success",
+        });
+      }
+    });
+  };
+
   return (
     <Table className="mt-7">
       <TableHeader>
@@ -51,13 +74,10 @@ export default function GroupChatTable() {
             {status ? (
               <Lock
                 className="text-red-400 cursor-pointer"
-                onClick={() => setStatus((prev) => !prev)}
+                onClick={hanldeLock}
               />
             ) : (
-              <Unlock
-                className="cursor-pointer"
-                onClick={() => setStatus((prev) => !prev)}
-              />
+              <Unlock className="cursor-pointer" onClick={hanldeLock} />
             )}
           </TableCell>
         </TableRow>
