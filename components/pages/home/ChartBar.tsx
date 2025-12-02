@@ -48,7 +48,7 @@ const TinyBarChart = () => {
       {/* 👇 MUST have height to render */}
       <div className="w-full h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
+          <BarChart data={data} barSize={40}>
             <XAxis dataKey="name" />
 
             <Bar dataKey="uv" width={200} fill="#E40004" />

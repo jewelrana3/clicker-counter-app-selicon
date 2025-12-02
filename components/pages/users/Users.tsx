@@ -117,6 +117,7 @@ export default function Users() {
               <div className="flex items-center  space-x-2">
                 <div>
                   <UsersDetailsModal
+                    index={index}
                     trigger={
                       <div className="text-red-400 cursor-pointer mt-2">
                         <Info />

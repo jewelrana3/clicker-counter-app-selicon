@@ -3,13 +3,16 @@ import Image from "next/image";
 
 export default function UsersDetailsModal({
   trigger,
+  index,
 }: {
   trigger: React.ReactNode;
+  index: number;
 }) {
   return (
     <Dialog>
       <DialogTrigger>{trigger}</DialogTrigger>
       <DialogContent className="bg-white rounded-xl min-w-xl  max-w-xl w-full ">
+        {index % 2 === 0 ? <span>Active</span> : <span>Inactive</span>}
         <div className="">
           {/* Header */}
           <div className="p-3 flex items-center gap-3">
