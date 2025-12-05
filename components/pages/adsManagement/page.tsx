@@ -12,7 +12,15 @@ import {
 import { Info, Search, Trash2 } from "lucide-react";
 import AdsDetailsModal from "./AdsDetailsModal";
 import Image from "next/image";
-import DeleteModal from "./DeleteModal";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SelectItems } from "@/components/share/SelectItem";
 import { Input } from "@/components/ui/input";
 
@@ -62,7 +70,7 @@ export default function AdsManagement() {
             <TableHead>Reach</TableHead>
             <TableHead>Click</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Action</TableHead>
+            <TableHead className="pl-9">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -102,13 +110,24 @@ export default function AdsManagement() {
                     }
                   />
 
-                  <DeleteModal
+                  {/* <DeleteModal
                     trigger={
                       <div className=" cursor-pointer">
                         <Trash2 />
                       </div>
                     }
-                  />
+                  /> */}
+                  <Select>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="apple">Suspense</SelectItem>
+                        <SelectItem value="banana">Unsuspense</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               </TableCell>
             </TableRow>
