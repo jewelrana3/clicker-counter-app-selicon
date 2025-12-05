@@ -17,7 +17,7 @@ const stats = [
   },
   {
     title: "Total Earning",
-    total: "802,500",
+    total: "$802,500",
     daily: "+$10,253",
     icon: "/home/network.png",
   },
@@ -46,7 +46,7 @@ export default function DashboardSummary() {
           </div>
           <p className="text-sm  text-gray-400 my-3">13 Dec, 2024</p>
           <div className="flex items-center justify-between">
-            <p className="text-xl text-gray-800">Total : ${stat.total}</p>
+            <p className="text-xl text-gray-800">Total : {stat.total}</p>
             <div className="flex">
               <p className={`mt-1 text-sm  `}>
                 Daily :{" "}

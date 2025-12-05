@@ -9,11 +9,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Info, Lock, Unlock } from "lucide-react";
+import { Info, Lock, Search, Unlock } from "lucide-react";
 import Image from "next/image";
 import UsersDetailsModal from "./UsersDetailsModal";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { SelectItems } from "./../../share/SelectItem";
+import { Input } from "@/components/ui/input";
 
 const data = [
   {
@@ -37,6 +39,9 @@ const data = [
     status: "Inactive",
   },
 ];
+
+const allUsers = ["All", "All Users", "Business Users"];
+const all = ["All", "Active", "Inactive", "Blocked"];
 
 export default function Users() {
   const [status, setStatus] = useState([1, 2]);
@@ -73,81 +78,97 @@ export default function Users() {
   };
 
   return (
-    <Table className="mt-7">
-      <TableHeader>
-        <TableRow>
-          <TableHead>S.No</TableHead>
-          <TableHead>User Name</TableHead>
-          <TableHead>Contact</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Reg. Date</TableHead>
-          <TableHead>Gender</TableHead>
-          <TableHead>Address</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Action</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data.map((item, index) => (
-          <TableRow key={index}>
-            <TableCell>0 {index + 1}</TableCell>
-            <TableCell className="flex items-center gap-2">
-              <Image
-                src="/ads/profile.png"
-                alt="Logo"
-                width={10}
-                height={10}
-                className="w-10 h-10 rounded-full"
-              />
-              {item.name}
-            </TableCell>
+    <>
+      <div className="flex justify-end ">
+        <div className="flex gap-5 w-[50%]">
+          <div className="w-full relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <Search />
+            </span>
 
-            <TableCell>{item.contact}</TableCell>
-            <TableCell>{item.email}</TableCell>
-            <TableCell>{item.date}</TableCell>
-            <TableCell>{item.gender}</TableCell>
-            <TableCell>{item.address}</TableCell>
+            <Input className="pl-10" placeholder="Search here" />
+          </div>
 
-            <TableCell>
-              <Badge
-                className={`text-md w-20 ${
-                  item.status === "Active" ? "bg-[#008F37]" : "bg-[#F48201] "
-                }`}
-              >
-                {item.status}
-              </Badge>
-            </TableCell>
-            <TableCell className="pl-">
-              <div className="flex items-center  space-x-2">
-                <div>
-                  <UsersDetailsModal
-                    index={index}
-                    trigger={
-                      <div className="text-red-400 cursor-pointer mt-2">
-                        <Info />
-                      </div>
-                    }
-                  />
-                </div>
-
-                <div>
-                  {status.includes(item.id) ? (
-                    <Lock
-                      className="text-red-400 cursor-pointer"
-                      onClick={() => hanldeLock(item.id)}
-                    />
-                  ) : (
-                    <Unlock
-                      className="cursor-pointer"
-                      onClick={() => hanldeLock(item.id)}
-                    />
-                  )}
-                </div>
-              </div>
-            </TableCell>
+          <SelectItems select={all} placeholder="All" />
+          <SelectItems select={allUsers} placeholder="All Users" />
+        </div>
+      </div>
+      <Table className="mt-7">
+        <TableHeader>
+          <TableRow>
+            <TableHead>S.No</TableHead>
+            <TableHead>User Name</TableHead>
+            <TableHead>Contact</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Reg. Date</TableHead>
+            <TableHead>Gender</TableHead>
+            <TableHead>Address</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {data.map((item, index) => (
+            <TableRow key={index}>
+              <TableCell>0 {index + 1}</TableCell>
+              <TableCell className="flex items-center gap-2">
+                <Image
+                  src="/ads/profile.png"
+                  alt="Logo"
+                  width={10}
+                  height={10}
+                  className="w-10 h-10 rounded-full"
+                />
+                {item.name}
+              </TableCell>
+
+              <TableCell>{item.contact}</TableCell>
+              <TableCell>{item.email}</TableCell>
+              <TableCell>{item.date}</TableCell>
+              <TableCell>{item.gender}</TableCell>
+              <TableCell>{item.address}</TableCell>
+
+              <TableCell>
+                <Badge
+                  className={`text-md w-20 ${
+                    item.status === "Active" ? "bg-[#008F37]" : "bg-[#F48201] "
+                  }`}
+                >
+                  {item.status}
+                </Badge>
+              </TableCell>
+              <TableCell className="pl-">
+                <div className="flex items-center  space-x-2">
+                  <div>
+                    <UsersDetailsModal
+                      index={index}
+                      trigger={
+                        <div className="text-red-400 cursor-pointer mt-2">
+                          <Info />
+                        </div>
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    {status.includes(item.id) ? (
+                      <Lock
+                        className="text-red-400 cursor-pointer"
+                        onClick={() => hanldeLock(item.id)}
+                      />
+                    ) : (
+                      <Unlock
+                        className="cursor-pointer"
+                        onClick={() => hanldeLock(item.id)}
+                      />
+                    )}
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </>
   );
 }
