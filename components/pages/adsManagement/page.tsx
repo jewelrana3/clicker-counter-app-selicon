@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Info, Search, Trash2 } from "lucide-react";
+import { Info, Search } from "lucide-react";
 import AdsDetailsModal from "./AdsDetailsModal";
 import Image from "next/image";
 import {
@@ -17,7 +17,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -36,11 +35,39 @@ const data = [
     click: "8,000",
     status: "Active",
   },
+  {
+    name: " Rohman",
+    description: "This page helps to find beat so...",
+    link: "Webxila.com/ics...",
+    price: "$100",
+    startDate: "12/21/2023",
+    endDate: "12/06/2026",
+    reach: "10,000",
+    click: "8,000",
+    status: "Pending",
+  },
+  {
+    name: "Alex",
+    description: "This page helps to find beat so...",
+    link: "Webxila.com/ics...",
+    price: "$100",
+    startDate: "12/21/2023",
+    endDate: "12/06/2026",
+    reach: "10,000",
+    click: "8,000",
+    status: "Inactive",
+  },
 ];
 
 const all = ["All", "Active", "Inactive", "Pending"];
 
 export default function AdsManagement() {
+  const statusColor = {
+    Active: "text-[#008F37] bg-[#00FF6226] border border-[#008F37]",
+    Inactive: "bg-[#FFD9D9] border border-[#E40004] text-[#E40004]",
+    Pending: "bg-[#FFECD7] border border-[#F48201] text-[#F48201]",
+  };
+
   return (
     <>
       <div className="flex justify-end ">
@@ -96,8 +123,12 @@ export default function AdsManagement() {
               <TableCell>{item.reach}</TableCell>
               <TableCell>{item.click}</TableCell>
               <TableCell>
-                <Badge className="text-md text-[#008F37] bg-[#00FF6226] border border-[#008F37]">
-                  Active
+                <Badge
+                  className={`text-md  w-20 ${
+                    statusColor[item.status as keyof typeof statusColor]
+                  }`}
+                >
+                  {item.status}
                 </Badge>
               </TableCell>
               <TableCell className="">
@@ -119,7 +150,7 @@ export default function AdsManagement() {
                   /> */}
                   <Select>
                     <SelectTrigger className="w-[140px]">
-                      <SelectValue placeholder="Select" />
+                      <SelectValue placeholder="Suspense" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>

@@ -46,7 +46,7 @@ export default function UsersDetailsModal({
             {/* Price */}
             <div>
               <p className="text-sm text-gray-500 font-medium">Age</p>
-              <p className="">$200</p>
+              <p className="">200</p>
             </div>
 
             {/* Reach & Click */}
@@ -58,6 +58,10 @@ export default function UsersDetailsModal({
               <div>
                 <p className="text-sm text-gray-500 font-medium">Address</p>
                 <p className="">California, USA</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Country</p>
+                <p className="">USA</p>
               </div>
             </div>
           </div>

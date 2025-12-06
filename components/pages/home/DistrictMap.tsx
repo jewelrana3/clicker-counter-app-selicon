@@ -1,7 +1,12 @@
-// components/DistrictMap.tsx
 "use client";
 
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  Marker,
+  InfoWindow,
+  useJsApiLoader,
+} from "@react-google-maps/api";
+import { useState, useRef } from "react";
 
 const containerStyle = {
   width: "100%",
@@ -25,41 +30,82 @@ const districts = [
   { name: "Paya Lebar", lat: 1.3369, lng: 103.8881 },
 ];
 
+const vibeStats = [
+  { label: "Great Vibes", value: 20000 },
+  { label: "Off Vibes", value: 3000 },
+  { label: "C. Gentlemen", value: 150 },
+  { label: "Lovely Lady", value: 9000 },
+];
+
 export default function DistrictMap() {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!, // ✅ set this in .env.local
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
+
+  const [hovered, setHovered] = useState<number | null>(null);
+  const hideTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseOver = (index: number) => {
+    if (hideTimeout.current) clearTimeout(hideTimeout.current);
+    setHovered(index);
+  };
+
+  const handleMouseOut = () => {
+    if (hideTimeout.current) {
+      hideTimeout.current = setTimeout(() => {
+        setHovered(null);
+      }, 5000); // small delay prevents flickering
+    }
+  };
 
   if (!isLoaded) return <div>Loading map...</div>;
 
   return (
-    <div className="">
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={12}
-        mapContainerClassName="w-full !h-[500px]"
-      >
-        {districts.map((district, index) => (
-          <Marker
-            key={index}
-            position={{ lat: district.lat, lng: district.lng }}
-            label={{
-              text: district.name,
-              color: "white",
-              fontSize: "14px",
-              fontWeight: "bold",
+    <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={12}>
+      {districts.map((district, index) => (
+        <Marker
+          key={index}
+          position={{ lat: district.lat, lng: district.lng }}
+          label={{
+            text: district.name,
+            color: "white",
+            fontSize: "14px",
+            fontWeight: "bold",
+          }}
+          onMouseOver={() => handleMouseOver(index)}
+          onMouseOut={handleMouseOut}
+        />
+      ))}
+
+      {hovered !== null && (
+        <InfoWindow
+          position={{
+            lat: districts[hovered].lat,
+            lng: districts[hovered].lng,
+          }}
+          onCloseClick={() => setHovered(null)}
+        >
+          <div
+            onMouseEnter={() => {
+              if (hideTimeout.current) clearTimeout(hideTimeout.current);
             }}
-            // icon={{
-            //   path: google.maps.SymbolPath.CIRCLE,
-            //   scale: 8,
-            //   fillColor: "red",
-            //   fillOpacity: 1,
-            //   strokeWeight: 0,
-            // }}
-          />
-        ))}
-      </GoogleMap>
-    </div>
+            onMouseLeave={handleMouseOut}
+          >
+            {/* <h3 className="font-bold">{districts[hovered].name}</h3> */}
+            <div>
+              {vibeStats?.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex text-lg text-black font-medium"
+                >
+                  <p>{item.label} : </p>
+                  <p> {item.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </InfoWindow>
+      )}
+    </GoogleMap>
   );
 }
