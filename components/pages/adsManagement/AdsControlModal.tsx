@@ -3,27 +3,19 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 export default function AdsControlModal({
   trigger,
+  id,
 }: {
   trigger: React.ReactNode;
+  id?: string;
 }) {
   return (
     <Dialog>
       <DialogTrigger>{trigger}</DialogTrigger>
       <DialogContent className="bg-white rounded-xl min-w-xl  max-w-xl w-full  overflow-y-auto">
         <h1 className="text-center text-xl text-black font-medium">
-          Set Your Ads Price
+          {id ? "Add plan" : "Edit Plan"}
         </h1>
         <div>
           <Label className="mb-2 text-[#636363] font-medium text-lg">
@@ -33,8 +25,8 @@ export default function AdsControlModal({
         </div>
 
         <div>
-          <Label className="mb-2 text-[#636363] text-lg">Ads Time</Label>
-          <Select>
+          <Label className="mb-2 text-[#636363] text-lg">Duration</Label>
+          {/* <Select>
             <SelectTrigger className="w-full rounded-full !h-12">
               <SelectValue placeholder="Select month" />
             </SelectTrigger>
@@ -44,7 +36,8 @@ export default function AdsControlModal({
                 <SelectItem value="monthly">Monthly</SelectItem>
               </SelectGroup>
             </SelectContent>
-          </Select>
+          </Select> */}
+          <Input type="text" placeholder="enter your duration" />
         </div>
 
         <Button className="bg-[#E40004]">Set</Button>

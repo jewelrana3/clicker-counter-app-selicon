@@ -23,6 +23,7 @@ import {
 import { SelectItems } from "@/components/share/SelectItem";
 import { Input } from "@/components/ui/input";
 import AdsControlModal from "./AdsControlModal";
+import Link from "next/link";
 
 const data = [
   {
@@ -73,13 +74,18 @@ export default function AdsManagement() {
     <>
       <div className="flex justify-end space-x-4">
         <div>
-          <AdsControlModal
+          {/* <AdsControlModal
             trigger={
               <button className="bg-[#E40004] text-white p-3 rounded-full cursor-pointer">
-                Ads Control
+                Ads Plan
               </button>
             }
-          />
+          /> */}
+          <Link href="/ads-plan">
+            <button className="bg-[#E40004] text-white p-3 rounded-full cursor-pointer">
+              Ads Plan
+            </button>
+          </Link>
         </div>
         <div className="flex gap-5 w-[50%]">
           <div className="w-full relative">
