@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import React from "react";
 
-export default function UserModal({ trigger }) {
+export default function UserModal({ trigger }: any) {
   return (
     <Dialog>
       <DialogTrigger className="cursor-pointer">{trigger}</DialogTrigger>
