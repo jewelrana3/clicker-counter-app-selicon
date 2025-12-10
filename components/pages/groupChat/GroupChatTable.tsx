@@ -12,6 +12,7 @@ import { Lock, Unlock } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import UserModal from "./UserModal";
 
 export default function GroupChatTable() {
   const [status, setStatus] = useState<boolean>(true);
@@ -70,7 +71,9 @@ export default function GroupChatTable() {
           </TableCell>
           <TableCell>John Doe</TableCell>
           <TableCell>Admin</TableCell>
-          <TableCell>12</TableCell>
+          <TableCell className="pl-6">
+            <UserModal trigger={<p>3</p>} />
+          </TableCell>
           <TableCell>2025-11-13</TableCell>
           <TableCell>
             <Badge className="text-md bg-green-600">Active</Badge>

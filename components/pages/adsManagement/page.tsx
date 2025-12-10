@@ -165,7 +165,7 @@ export default function AdsManagement() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="apple">Suspense</SelectItem>
-                        <SelectItem value="banana">Unsuspense</SelectItem>
+                        <SelectItem value="banana">Active</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
