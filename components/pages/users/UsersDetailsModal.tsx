@@ -1,6 +1,5 @@
 "use client";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Divide } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
