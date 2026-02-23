@@ -4,8 +4,9 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRef, useState } from "react";
 import { Input } from "../ui/input";
 import toast from "react-hot-toast";
-import Form from "next/form";
 import { Button } from "../ui/button";
+import { changePasswordAction } from "@/app/actions/changePasswordAction";
+import { Loader2 } from "lucide-react";
 
 export default function ChangePassword() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -14,6 +15,7 @@ export default function ChangePassword() {
     new: false,
     confirm: false,
   });
+  const [loading, setLoading] = useState(false);
 
   const toggleVisibility = (field: string) => {
     setShowPassword((prev) => ({
@@ -37,16 +39,29 @@ export default function ChangePassword() {
       confirmPassword,
     };
 
-    // Optional: check if newPassword matches confirmPassword
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
+
+    setLoading(true);
+    try {
+      const result = await changePasswordAction(payload);
+      if (result.success) {
+        toast.success(result.message);
+        formRef.current?.reset();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Form
-      action="/api/change-password"
+    <form
       onSubmit={handleSubmit}
       ref={formRef}
       className=" mx-auto w-[50%] space-y-6 "
@@ -61,7 +76,7 @@ export default function ChangePassword() {
             name="currentPassword"
             type={showPassword.current ? "text" : "password"}
             placeholder="Enter Password"
-            className="w-full px-4 py-2 border rounded focus:outline-none"
+            className="w-full px-4 h-12 rounded-full border focus:outline-none"
           />
           <span
             className="absolute right-3 top-2.5 cursor-pointer text-gray-500"
@@ -82,7 +97,7 @@ export default function ChangePassword() {
             name="newPassword"
             type={showPassword.new ? "text" : "password"}
             placeholder="Enter Password"
-            className="w-full px-4 py-2 border rounded focus:outline-none"
+            className="w-full px-4 h-12 rounded-full border focus:outline-none"
           />
           <span
             className="absolute right-3 top-2.5 cursor-pointer text-gray-500"
@@ -103,7 +118,7 @@ export default function ChangePassword() {
             name="confirmPassword"
             type={showPassword.confirm ? "text" : "password"}
             placeholder="Enter Password"
-            className="w-full px-4 py-2 border rounded focus:outline-none"
+            className="w-full px-4 h-12 rounded-full border focus:outline-none"
           />
           <span
             className="absolute right-3 top-2.5 cursor-pointer text-gray-500"
@@ -116,10 +131,21 @@ export default function ChangePassword() {
 
       {/* Submit Button */}
       <div>
-        <Button type="submit" className="w-full ">
-          Update Password
+        <Button
+          type="submit"
+          className="w-full bg-red-600 hover:bg-red-700 h-11 rounded-full text-lg font-medium"
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Updating...
+            </>
+          ) : (
+            "Update Password"
+          )}
         </Button>
       </div>
-    </Form>
+    </form>
   );
 }

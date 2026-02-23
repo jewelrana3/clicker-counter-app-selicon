@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   description: "Clicker Count App with Next.js",
 };
 
+import { Toaster } from "react-hot-toast";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,6 +26,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${poppins.variable} antialiased `}
       >
+        <Toaster position="top-center" reverseOrder={false} />
         {children}
       </body>
     </html>

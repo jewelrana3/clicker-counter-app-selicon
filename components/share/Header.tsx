@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getProfileAction } from "@/app/actions/getProfileAction";
+import { getImageUrl } from "@/lib/GetImageUrl";
 
 const pathnames = [
   { id: 1, label: "Analytics", path: "/" },
@@ -66,7 +67,7 @@ export default function Header() {
           <div className="flex items-center space-x-2">
             <div className="relative w-10 h-10 overflow-hidden rounded-full border border-gray-200">
               <Image
-                src={userProfile?.image || "/profile.jpg"}
+                src={getImageUrl(userProfile?.image)}
                 alt="User Avatar"
                 fill
                 className="object-cover"

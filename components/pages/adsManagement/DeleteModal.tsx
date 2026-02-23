@@ -3,30 +3,36 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
 export default function DeleteModal({ trigger }: { trigger: React.ReactNode }) {
   return (
     <Dialog>
-      <DialogTrigger>{trigger}</DialogTrigger>
-      <DialogContent className="bg-white rounded-xl">
-        <div className=" mt-5">
-          <h3 className="text-xl text-center mb-4 text-gray-700">
-            Are you sure you want to delete <br /> this ads?
-          </h3>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="bg-white rounded-xl p-6">
+        <DialogHeader>
+          <DialogTitle className="text-xl text-center mb-2 text-gray-700">
+            Confirm Deletion
+          </DialogTitle>
+          <DialogDescription className="text-center text-gray-500 mb-4">
+            Are you sure you want to delete this advertisement? This action
+            cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
 
-          {/* Buttons */}
-          <div className="flex justify-between gap-4">
-            <DialogClose className="w-full">
-              <Button className="w-full py-2 bg-white border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100">
-                No
-              </Button>
-            </DialogClose>
-            <Button className="w-1/2 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-              Yes
+        <div className="flex justify-between gap-4 mt-4">
+          <DialogClose asChild>
+            <Button className="w-1/2 py-2 bg-white border border-gray-400 text-gray-600 rounded-md hover:bg-gray-100">
+              No
             </Button>
-          </div>
+          </DialogClose>
+          <Button className="w-1/2 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+            Yes
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import Image from "next/image";
 
 export default function UserActivityDetailsModal({
@@ -11,8 +18,15 @@ export default function UserActivityDetailsModal({
 }) {
   return (
     <Dialog>
-      <DialogTrigger>{trigger}</DialogTrigger>
-      <DialogContent className="bg-white rounded-xl min-w-xl  max-w-xl w-full ">
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="bg-white rounded-xl min-w-xl max-w-xl w-full p-6">
+        <DialogHeader className="sr-only">
+          <DialogTitle>User Activity Details</DialogTitle>
+          <DialogDescription>
+            Detailed view of user moments, description, and status.
+          </DialogDescription>
+        </DialogHeader>
+
         <div className="">
           {/* Header */}
           <div className="flex items-center gap-3">
