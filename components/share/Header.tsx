@@ -4,6 +4,8 @@ import Image from "next/image";
 import Title from "./Title";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getProfileAction } from "@/app/actions/getProfileAction";
 
 const pathnames = [
   { id: 1, label: "Analytics", path: "/" },
@@ -11,34 +13,45 @@ const pathnames = [
   {
     id: 3,
     label: "User Activity",
-
     path: "/user-activity",
   },
   { id: 4, label: "Ads Management", path: "/ads-management" },
   { id: 14, label: "Group Chat", path: "/group-chat" },
-
   { id: 5, label: "Privacy Policy", path: "/privacy-policy" },
   {
     id: 6,
     label: "Terms & Condition",
-
     path: "/terms-condition",
   },
   { id: 7, label: "Change Password", path: "/change-password" },
-
   { id: 8, label: "Nearby Setting", path: "/near-by" },
   { id: 9, label: "Notifications", path: "/notifications" },
-  { id: 9, label: "Profile", path: "/profile" },
+  { id: 10, label: "Profile", path: "/profile" },
 ];
 
 export default function Header() {
   const pathname = usePathname();
+  const [userProfile, setUserProfile] = useState<{
+    name: string;
+    image: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const result = await getProfileAction();
+      if (result.success && result.data) {
+        setUserProfile(result.data);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const currentPath = pathnames.find((item) => item.path === pathname);
+
   return (
     <div className="flex items-center justify-between h-20 pr-4 ">
       <div>
-        <Title className="!text-lg !mb-0">{currentPath?.label}</Title>
+        <Title className="text-lg! mb-0!">{currentPath?.label}</Title>
       </div>
       <div className="flex items-center space-x-4">
         <Link href="/notifications">
@@ -51,15 +64,18 @@ export default function Header() {
         </Link>
         <Link href="/profile">
           <div className="flex items-center space-x-2">
-            <Image
-              src="/profile.jpg"
-              alt="User Avatar"
-              width={40}
-              height={50}
-              className="w-10 h-10 rounded-full"
-              sizes="100vh"
-            />
-            <p className="text-[#333333]">Admin Humphrey</p>
+            <div className="relative w-10 h-10 overflow-hidden rounded-full border border-gray-200">
+              <Image
+                src={userProfile?.image || "/profile.jpg"}
+                alt="User Avatar"
+                fill
+                className="object-cover"
+                sizes="40px"
+              />
+            </div>
+            <p className="text-[#333333] font-medium">
+              {userProfile?.name || "Admin"}
+            </p>
           </div>
         </Link>
       </div>

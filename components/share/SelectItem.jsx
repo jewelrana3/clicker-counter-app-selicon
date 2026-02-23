@@ -7,16 +7,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function SelectItems({ select, placeholder }) {
+export function SelectItems({ select, placeholder, value, onChange }) {
   return (
-    <Select>
-      <SelectTrigger className="w-[60%] !h-12 rounded-full">
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-full h-12! rounded-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           {select?.map((item, index) => (
-            <SelectItem key={index} value={index}>
+            <SelectItem key={index} value={item}>
               {item}
             </SelectItem>
           ))}

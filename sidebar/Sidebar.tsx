@@ -17,6 +17,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { logoutAction } from "@/app/actions/logoutAction";
 
 export const sidebarMenu = [
   { id: 1, label: "Analytics", icon: LayoutGrid, path: "/" },
@@ -59,13 +60,14 @@ export default function Sidebar() {
         confirmButton: "swal-btn",
         cancelButton: "swal-btn",
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
+        await logoutAction();
         router.push("/login");
 
         Swal.fire({
           title: "Logged Out",
-          text: "Your have been Log Out.",
+          text: "You have been logged out.",
           icon: "success",
         });
       }
@@ -99,8 +101,8 @@ export default function Sidebar() {
                     item?.label === "Log Out"
                       ? "text-red-600"
                       : isActive
-                      ? "bg-[#E40004] text-white rounded-2xl"
-                      : "text-gray-800"
+                        ? "bg-[#E40004] text-white rounded-2xl"
+                        : "text-gray-800"
                   }`}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
