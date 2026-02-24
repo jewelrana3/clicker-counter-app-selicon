@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { handleAuthError } from "@/lib/handleAuthError";
 
 export async function getGroupChatsAction(params: {
   page?: number;
@@ -36,6 +37,7 @@ export async function getGroupChatsAction(params: {
     );
 
     const data = await res.json();
+    await handleAuthError(data);
 
     if (!data.success) {
       return {

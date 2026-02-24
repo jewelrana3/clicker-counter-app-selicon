@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getProfileAction } from "@/app/actions/getProfileAction";
+import { getNotificationsAction } from "@/app/actions/getNotificationsAction";
 import { getImageUrl } from "@/lib/GetImageUrl";
 
 const pathnames = [
@@ -37,15 +38,24 @@ export default function Header() {
     image: string;
   } | null>(null);
 
+  const [unreadCount, setUnreadCount] = useState(0);
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      const result = await getProfileAction();
-      if (result.success && result.data) {
-        setUserProfile(result.data);
+    const fetchData = async () => {
+      // Fetch Profile
+      const profileResult = await getProfileAction();
+      if (profileResult.success && profileResult.data) {
+        setUserProfile(profileResult.data);
+      }
+
+      // Fetch Notifications for unread count
+      const notificationResult = await getNotificationsAction(1, 1);
+      if (notificationResult.success && notificationResult.data) {
+        setUnreadCount(notificationResult.data.unreadCount || 0);
       }
     };
-    fetchProfile();
-  }, []);
+    fetchData();
+  }, [pathname]); // Refresh count when navigating
 
   const currentPath = pathnames.find((item) => item.path === pathname);
 
@@ -58,9 +68,11 @@ export default function Header() {
         <Link href="/notifications">
           <div className="p-3 rounded-full bg-white hover:bg-gray-300 cursor-pointer relative">
             <Bell size={28} />
-            <p className="absolute top-0 right-0 bg-yellow-500 w-6 h-6 rounded-full text-center text-[#5C5C5C]">
-              2
-            </p>
+            {unreadCount > 0 && (
+              <p className="absolute top-0 right-0 bg-yellow-500 w-6 h-6 rounded-full text-center text-[#5C5C5C] text-sm font-bold flex items-center justify-center">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </p>
+            )}
           </div>
         </Link>
         <Link href="/profile">

@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { handleAuthError } from "@/lib/handleAuthError";
 
 export async function getEarningGrowthAction(year?: string) {
   try {
@@ -29,6 +30,7 @@ export async function getEarningGrowthAction(year?: string) {
     });
 
     const data = await res.json();
+    await handleAuthError(data);
     return data;
   } catch (error) {
     console.error("Get earning growth error:", error);

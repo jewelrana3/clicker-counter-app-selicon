@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { handleAuthError } from "@/lib/handleAuthError";
 
 export async function updateSettingsAction(payload: { nearbyRange: number }) {
   try {
@@ -25,6 +26,7 @@ export async function updateSettingsAction(payload: { nearbyRange: number }) {
     });
 
     const data = await res.json();
+    await handleAuthError(data);
 
     if (!data.success) {
       return {

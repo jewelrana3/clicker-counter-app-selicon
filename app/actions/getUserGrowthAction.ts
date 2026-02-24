@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { handleAuthError } from "@/lib/handleAuthError";
 
 export async function getUserGrowthAction(year?: string) {
   try {
@@ -29,6 +30,7 @@ export async function getUserGrowthAction(year?: string) {
     });
 
     const data = await res.json();
+    await handleAuthError(data);
 
     if (!data.success) {
       return {

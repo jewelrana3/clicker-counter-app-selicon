@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { handleAuthError } from "@/lib/handleAuthError";
 
 export async function updatePlanAction(
   planId: string,
@@ -28,6 +29,7 @@ export async function updatePlanAction(
     });
 
     const data = await res.json();
+    await handleAuthError(data);
 
     if (!data.success) {
       return {

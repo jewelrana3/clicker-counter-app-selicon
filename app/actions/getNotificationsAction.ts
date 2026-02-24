@@ -3,7 +3,10 @@
 import { cookies } from "next/headers";
 import { handleAuthError } from "@/lib/handleAuthError";
 
-export async function updateAdStatusAction(adId: string, status: string) {
+export async function getNotificationsAction(
+  page: number = 1,
+  limit: number = 10,
+) {
   try {
     const baseUrl = process.env.BASE_URL;
     const cookieStore = await cookies();
@@ -12,41 +15,30 @@ export async function updateAdStatusAction(adId: string, status: string) {
     if (!accessToken) {
       return {
         success: false,
-        message: "Access token missing.",
+        message: "No access token found",
       };
     }
 
     const res = await fetch(
-      `${baseUrl}/advertisements/update-approval-status/${adId}`,
+      `${baseUrl}/notifications/me?page=${page}&limit=${limit}`,
       {
-        method: "PATCH",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ approvalStatus: status }),
+        next: { revalidate: 0 }, // Disable cache for notifications
       },
     );
 
     const data = await res.json();
     await handleAuthError(data);
-
-    if (!data.success) {
-      return {
-        success: false,
-        message: data.message || "Failed to update advertisement status.",
-      };
-    }
-
-    return {
-      success: true,
-      message: data.message || "Advertisement status updated successfully.",
-    };
+    return data;
   } catch (error) {
-    console.error("Update ad status error:", error);
+    console.error("Get notifications error:", error);
     return {
       success: false,
-      message: "Something went wrong. Please try again later.",
+      message: "Something went wrong fetching notifications",
     };
   }
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { handleAuthError } from "@/lib/handleAuthError";
 
 export async function deletePlanAction(planId: string) {
   try {
@@ -24,6 +25,7 @@ export async function deletePlanAction(planId: string) {
     });
 
     const data = await res.json();
+    await handleAuthError(data);
 
     if (!data.success) {
       return {

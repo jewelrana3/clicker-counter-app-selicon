@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { handleAuthError } from "@/lib/handleAuthError";
 
-export async function updateProfileAction(formData: FormData) {
+export async function readNotificationAction(id: string) {
   try {
     const baseUrl = process.env.BASE_URL;
     const cookieStore = await cookies();
@@ -12,38 +12,26 @@ export async function updateProfileAction(formData: FormData) {
     if (!accessToken) {
       return {
         success: false,
-        message: "Access token missing.",
+        message: "No access token found",
       };
     }
 
-    const res = await fetch(`${baseUrl}/users/profile`, {
+    const res = await fetch(`${baseUrl}/notifications/read/${id}`, {
       method: "PATCH",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: formData,
     });
 
     const data = await res.json();
     await handleAuthError(data);
-
-    if (!data.success) {
-      return {
-        success: false,
-        message: data.message || "Failed to update profile.",
-      };
-    }
-
-    return {
-      success: true,
-      message: data.message || "Profile updated successfully.",
-      data: data.data,
-    };
+    return data;
   } catch (error) {
-    console.error("Update profile error:", error);
+    console.error("Read notification error:", error);
     return {
       success: false,
-      message: "Something went wrong. Please try again later.",
+      message: "Something went wrong marking notification as read",
     };
   }
 }
