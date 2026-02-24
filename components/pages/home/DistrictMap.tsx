@@ -6,35 +6,95 @@ import {
   InfoWindow,
   useJsApiLoader,
 } from "@react-google-maps/api";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { getPostsAction } from "@/app/actions/getPostsAction";
+import { Loader2 } from "lucide-react";
 
 const containerStyle = {
   width: "100%",
-  height: "500px",
+  height: "480px",
 };
 
-const center = {
-  lat: 1.3521,
-  lng: 103.8198,
+const defaultCenter = {
+  lat: 23.8103,
+  lng: 90.4125, // Dhaka, Bangladesh
 };
 
-const districts = [
-  { name: "Seletar", lat: 1.4043, lng: 103.8678 },
-  { name: "Punggol", lat: 1.4044, lng: 103.902 },
-  { name: "Sengkang", lat: 1.3911, lng: 103.895 },
-  { name: "Hougang", lat: 1.3667, lng: 103.8864 },
-  { name: "Geylang", lat: 1.3167, lng: 103.8869 },
-  { name: "Bedok", lat: 1.3236, lng: 103.9305 },
-  { name: "Tampines", lat: 1.3496, lng: 103.9568 },
-  { name: "Pasir Ris", lat: 1.3736, lng: 103.9492 },
-  { name: "Paya Lebar", lat: 1.3369, lng: 103.8881 },
-];
-
-const vibeStats = [
-  { label: "Great Vibes", value: 20000 },
-  { label: "Off Vibes", value: 3000 },
-  { label: "C. Gentlemen", value: 150 },
-  { label: "Lovely Lady", value: 9000 },
+const mapStyle = [
+  { elementType: "geometry", stylers: [{ color: "#f5f5f5" }] },
+  { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] },
+  {
+    featureType: "administrative.land_parcel",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#bdbdbd" }],
+  },
+  {
+    featureType: "poi",
+    elementType: "geometry",
+    stylers: [{ color: "#eeeeee" }],
+  },
+  {
+    featureType: "poi",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#757575" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "geometry",
+    stylers: [{ color: "#e5e5e5" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9e9e9e" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#ffffff" }],
+  },
+  {
+    featureType: "road.arterial",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#757575" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#dadada" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#616161" }],
+  },
+  {
+    featureType: "road.local",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9e9e9e" }],
+  },
+  {
+    featureType: "transit.line",
+    elementType: "geometry",
+    stylers: [{ color: "#e5e5e5" }],
+  },
+  {
+    featureType: "transit.station",
+    elementType: "geometry",
+    stylers: [{ color: "#eeeeee" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#c9c9c9" }],
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9e9e9e" }],
+  },
 ];
 
 export default function DistrictMap() {
@@ -42,70 +102,138 @@ export default function DistrictMap() {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
 
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<number | null>(null);
-  const hideTimeout = useRef<NodeJS.Timeout | null>(null);
+  const mapRef = useRef<any>(null);
 
-  const handleMouseOver = (index: number) => {
-    if (hideTimeout.current) clearTimeout(hideTimeout.current);
-    setHovered(index);
+  useEffect(() => {
+    const fetchLocations = async () => {
+      setLoading(true);
+      try {
+        const res = await getPostsAction({ limit: 100 }); // Get a good number of locations
+        if (res.success) {
+          // Filter only posts with valid coordinates
+          const validPosts = (res.data || []).filter(
+            (post: any) =>
+              post.location?.coordinates &&
+              post.location.coordinates.length === 2,
+          );
+          setPosts(validPosts);
+
+          // Auto-fit bounds if we have posts and map is loaded
+          if (validPosts.length > 0 && mapRef.current) {
+            const bounds = new window.google.maps.LatLngBounds();
+            validPosts.forEach((post: any) => {
+              bounds.extend({
+                lat: post.location.coordinates[1],
+                lng: post.location.coordinates[0],
+              });
+            });
+            mapRef.current.fitBounds(bounds);
+          }
+        }
+      } catch (error) {
+        console.error("Fetch map locations error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLocations();
+  }, [isLoaded]);
+
+  const onMapLoad = (map: any) => {
+    mapRef.current = map;
   };
 
-  const handleMouseOut = () => {
-    if (hideTimeout.current) {
-      hideTimeout.current = setTimeout(() => {
-        setHovered(null);
-      }, 5000); // small delay prevents flickering
-    }
-  };
-
-  if (!isLoaded) return <div>Loading map...</div>;
+  if (!isLoaded) return <div>Loading Google Maps...</div>;
 
   return (
-    <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={12}>
-      {districts.map((district, index) => (
-        <Marker
-          key={index}
-          position={{ lat: district.lat, lng: district.lng }}
-          label={{
-            text: district.name,
-            color: "white",
-            fontSize: "14px",
-            fontWeight: "bold",
-          }}
-          onMouseOver={() => handleMouseOver(index)}
-          onMouseOut={handleMouseOut}
-        />
-      ))}
-
-      {hovered !== null && (
-        <InfoWindow
-          position={{
-            lat: districts[hovered].lat,
-            lng: districts[hovered].lng,
-          }}
-          onCloseClick={() => setHovered(null)}
-        >
-          <div
-            onMouseEnter={() => {
-              if (hideTimeout.current) clearTimeout(hideTimeout.current);
-            }}
-            onMouseLeave={handleMouseOut}
-          >
-            {/* <h3 className="font-bold">{districts[hovered].name}</h3> */}
-            <div>
-              {vibeStats?.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex text-lg text-black font-medium"
-                >
-                  <p>{item.label} : </p>
-                  <p> {item.value}</p>
-                </div>
-              ))}
-            </div>
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100/50">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-gray-800">Activity Map</h2>
+      </div>
+      <div className="rounded-xl overflow-hidden border border-gray-100 relative min-h-[480px] shadow-inner">
+        {loading && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/60 backdrop-blur-[2px]">
+            <Loader2 className="h-8 w-8 animate-spin text-[#E40004]" />
+            <p className="mt-2 text-sm text-gray-500 font-medium tracking-wide">
+              Syncing Activities...
+            </p>
           </div>
-        </InfoWindow>
-      )}
-    </GoogleMap>
+        )}
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={defaultCenter}
+          zoom={10}
+          onLoad={onMapLoad}
+          options={{
+            styles: mapStyle,
+            disableDefaultUI: true,
+            zoomControl: true,
+            gestureHandling: "hover",
+          }}
+        >
+          {posts.map((post, index) => (
+            <Marker
+              key={post._id}
+              position={{
+                lat: post.location.coordinates[1],
+                lng: post.location.coordinates[0],
+              }}
+              icon={{
+                path: window.google.maps.SymbolPath.CIRCLE,
+                fillColor: "#E40004",
+                fillOpacity: 0.9,
+                strokeWeight: 2,
+                strokeColor: "#ffffff",
+                scale: 7,
+              }}
+              onMouseOver={() => setHovered(index)}
+              onMouseOut={() => setHovered(null)}
+            />
+          ))}
+
+          {hovered !== null && posts[hovered] && (
+            <InfoWindow
+              position={{
+                lat: posts[hovered].location.coordinates[1],
+                lng: posts[hovered].location.coordinates[0],
+              }}
+              options={{
+                pixelOffset: new window.google.maps.Size(0, -10),
+              }}
+            >
+              <div className="p-2 min-w-[220px] bg-white rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  <h3 className="font-bold text-gray-900 text-[13px] line-clamp-1 leading-none">
+                    {posts[hovered].address || "Activity Point"}
+                  </h3>
+                </div>
+                <p className="text-[11px] text-gray-500 leading-relaxed mb-3 line-clamp-2 italic">
+                  "{posts[hovered].description || "No description provided."}"
+                </p>
+                <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                  <span className="px-2 py-0.5 bg-red-50 text-[9px] font-bold text-[#E40004] rounded-full uppercase tracking-tighter">
+                    {posts[hovered].clickerType}
+                  </span>
+                  <span className="text-[9px] font-medium text-gray-400">
+                    {new Date(posts[hovered].createdAt).toLocaleDateString(
+                      undefined,
+                      {
+                        month: "short",
+                        day: "numeric",
+                      },
+                    )}
+                  </span>
+                </div>
+              </div>
+            </InfoWindow>
+          )}
+        </GoogleMap>
+      </div>
+    </div>
   );
 }

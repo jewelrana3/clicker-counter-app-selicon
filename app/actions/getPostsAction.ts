@@ -33,7 +33,7 @@ export async function getPostsAction(params: {
     if (status && status !== "All Post" && status !== "All") {
       queryParams.append(
         "status",
-        status.toLowerCase().includes("active") ? "active" : "blocked",
+        status.toLowerCase().includes("active") ? "active" : "inactive",
       );
     }
 

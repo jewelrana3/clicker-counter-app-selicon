@@ -9,14 +9,69 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/GetImageUrl";
+import { togglePostStatusAction } from "@/app/actions/togglePostStatusAction";
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 export default function UserActivityDetailsModal({
   trigger,
   post,
+  onSuccess,
 }: {
   trigger: React.ReactNode;
   post: any;
+  onSuccess?: () => void;
 }) {
+  const handleToggleStatus = async () => {
+    const isCurrentlyActive = post.status === "active";
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `You want to ${isCurrentlyActive ? "block" : "unblock"} this post!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+      didOpen: () => {
+        const container = Swal.getContainer();
+        if (container) {
+          container.style.pointerEvents = "auto";
+        }
+      },
+    });
+
+    if (result.isConfirmed) {
+      const loadingToast = toast.loading("Updating status...");
+      try {
+        const res = await togglePostStatusAction(
+          post._id,
+          isCurrentlyActive ? "inactive" : "active",
+        );
+
+        toast.dismiss(loadingToast);
+
+        if (res.success) {
+          await Swal.fire({
+            title: isCurrentlyActive ? "Blocked!" : "Unblocked!",
+            text: `The post has been ${
+              isCurrentlyActive ? "blocked" : "unblocked"
+            }.`,
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+          });
+          if (onSuccess) onSuccess();
+        } else {
+          toast.error(res.message || "Failed to update status");
+        }
+      } catch (error) {
+        toast.dismiss(loadingToast);
+        console.error("Toggle status error:", error);
+        toast.error("Something went wrong");
+      }
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -92,21 +147,25 @@ export default function UserActivityDetailsModal({
               </div>
             </div>
 
-            {/* Status indicators (keeping the design pattern) */}
-            <div className="flex items-center justify-center space-x-10 mt-9">
-              <Button
-                variant="outline"
-                className={`font-normal rounded-lg border px-7 ${
-                  post.status === "active"
-                    ? "border-green-500 text-green-600"
-                    : "border-yellow-500 text-yellow-600"
-                }`}
-              >
-                {post.status === "active" ? "Active" : "Blocked/Pending"}
-              </Button>
-              <Button className="font-normal bg-[#008F37] text-white rounded-md">
-                Checked
-              </Button>
+            {/* Warning Text and Block Button */}
+            <div className="pt-4  space-y-6">
+              <p className="text-red-500 text-sm text-start font-normal leading-tight">
+                The administrator reserves the right to suspend or block any
+                user found posting illegal or prohibited content.
+              </p>
+
+              <div className="flex justify-center">
+                <Button
+                  onClick={handleToggleStatus}
+                  className={`w-full max-w-[200px] h-12 text-white font-medium rounded-lg text-lg ${
+                    post.status === "active"
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
+                >
+                  {post.status === "active" ? "Block" : "Unblock"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

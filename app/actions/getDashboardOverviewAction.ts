@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 
-export async function togglePostStatusAction(postId: string, status: string) {
+export async function getDashboardOverviewAction() {
   try {
     const baseUrl = process.env.BASE_URL;
     const cookieStore = await cookies();
@@ -15,13 +15,13 @@ export async function togglePostStatusAction(postId: string, status: string) {
       };
     }
 
-    const res = await fetch(`${baseUrl}/posts/update/${postId}`, {
-      method: "PATCH",
+    const res = await fetch(`${baseUrl}/analytics/overview`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ status }),
+      next: { revalidate: 0 },
     });
 
     const data = await res.json();
@@ -29,16 +29,16 @@ export async function togglePostStatusAction(postId: string, status: string) {
     if (!data.success) {
       return {
         success: false,
-        message: data.message || "Failed to update post status.",
+        message: data.message || "Failed to retrieve overview.",
       };
     }
 
     return {
       success: true,
-      message: data.message || "Post status updated successfully.",
+      data: data.data,
     };
   } catch (error) {
-    console.error("Toggle post status error:", error);
+    console.error("Get overview error:", error);
     return {
       success: false,
       message: "Something went wrong. Please try again later.",

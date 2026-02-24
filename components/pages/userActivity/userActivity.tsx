@@ -79,43 +79,6 @@ export default function UserActivity() {
     fetchPosts();
   }, [fetchPosts]);
 
-  const hanldeLock = async (id: string, currentStatus: string) => {
-    const isBlocked = currentStatus === "blocked";
-
-    Swal.fire({
-      title: "Are you sure?",
-      text: `You want to ${isBlocked ? "unblock" : "block"} this post!`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-      customClass: {
-        confirmButton: "swal-btn",
-        cancelButton: "swal-btn",
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await togglePostStatusAction(id);
-          if (res.success) {
-            Swal.fire({
-              title: isBlocked ? "Unblocked!" : "Blocked!",
-              text: `The post has been ${isBlocked ? "unblocked" : "blocked"}.`,
-              icon: "success",
-            });
-            fetchPosts();
-          } else {
-            toast.error(res.message || "Failed to update status");
-          }
-        } catch (error) {
-          console.error("Toggle status error:", error);
-          toast.error("Something went wrong");
-        }
-      }
-    });
-  };
-
   return (
     <>
       <div className="flex justify-end ">
@@ -127,7 +90,7 @@ export default function UserActivity() {
 
             <Input
               className="pl-10"
-              placeholder="Search here"
+              placeholder="Search by location..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -158,8 +121,8 @@ export default function UserActivity() {
           <TableRow>
             <TableHead>S.No</TableHead>
             <TableHead>User Name</TableHead>
-            <TableHead>Contact</TableHead>
             <TableHead>Email</TableHead>
+            <TableHead>Address</TableHead>
             <TableHead>Privacy</TableHead>
             <TableHead>Clicker </TableHead>
             <TableHead>Description </TableHead>
@@ -187,25 +150,30 @@ export default function UserActivity() {
                 </TableCell>
                 <TableCell className="flex items-center gap-2">
                   <Image
-                    src={getImageUrl(item.user?.image)}
+                    src={getImageUrl(item?.user?.image)}
                     alt="User"
                     width={40}
                     height={40}
                     className="w-10 h-10 rounded-full object-cover"
                   />
-                  {item.user?.name || "Unknown"}
+                  {item?.user?.name || "Unknown"}
                 </TableCell>
 
-                <TableCell>{item.user?.contact || "N/A"}</TableCell>
-                <TableCell>{item.user?.email || "N/A"}</TableCell>
-                <TableCell className="capitalize">{item.privacy}</TableCell>
-                <TableCell>{item.clickerType}</TableCell>
-                <TableCell>{item.description?.slice(0, 20)}...</TableCell>
+                <TableCell>{item?.user?.email || "N/A"}</TableCell>
+                <TableCell
+                  className="max-w-[150px] truncate cursor-help"
+                  title={item?.address || "N/A"}
+                >
+                  {item?.address || "N/A"}
+                </TableCell>
+                <TableCell className="capitalize">{item?.privacy}</TableCell>
+                <TableCell>{item?.clickerType}</TableCell>
+                <TableCell>{item?.description?.slice(0, 20)}...</TableCell>
 
                 <TableCell className="">
                   <div className="flex items-center  space-x-4">
                     <div className="mt-1">
-                      {item.status === "active" ? (
+                      {item?.status === "active" ? (
                         <Check className="text-green-600" />
                       ) : (
                         <ClockAlert className="text-yellow-600" />
@@ -214,26 +182,13 @@ export default function UserActivity() {
                     <div>
                       <UserActivityDetailsModal
                         post={item}
+                        onSuccess={fetchPosts}
                         trigger={
                           <div className="text-red-400 cursor-pointer mt-2">
                             <Info />
                           </div>
                         }
                       />
-                    </div>
-
-                    <div>
-                      {item.status === "blocked" ? (
-                        <Lock
-                          className="text-red-400 cursor-pointer"
-                          onClick={() => hanldeLock(item._id, item.status)}
-                        />
-                      ) : (
-                        <Unlock
-                          className="cursor-pointer"
-                          onClick={() => hanldeLock(item._id, item.status)}
-                        />
-                      )}
                     </div>
                   </div>
                 </TableCell>
