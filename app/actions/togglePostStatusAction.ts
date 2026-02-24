@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 
-export async function updateAdStatusAction(adId: string, status: string) {
+export async function togglePostStatusAction(postId: string) {
   try {
     const baseUrl = process.env.BASE_URL;
     const cookieStore = await cookies();
@@ -15,33 +15,30 @@ export async function updateAdStatusAction(adId: string, status: string) {
       };
     }
 
-    const res = await fetch(
-      `${baseUrl}/advertisements/update-approval-status/${adId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ approvalStatus: status }),
+    // Assuming the endpoint for toggling post status is similar to users/toggle-status
+    const res = await fetch(`${baseUrl}/posts/toggle-status/${postId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
-    );
+    });
 
     const data = await res.json();
 
     if (!data.success) {
       return {
         success: false,
-        message: data.message || "Failed to update advertisement status.",
+        message: data.message || "Failed to update post status.",
       };
     }
 
     return {
       success: true,
-      message: data.message || "Advertisement status updated successfully.",
+      message: data.message || "Post status updated successfully.",
     };
   } catch (error) {
-    console.error("Update ad status error:", error);
+    console.error("Toggle post status error:", error);
     return {
       success: false,
       message: "Something went wrong. Please try again later.",

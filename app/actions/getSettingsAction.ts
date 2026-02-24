@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 
-export async function updateAdStatusAction(adId: string, status: string) {
+export async function getSettingsAction() {
   try {
     const baseUrl = process.env.BASE_URL;
     const cookieStore = await cookies();
@@ -15,33 +15,30 @@ export async function updateAdStatusAction(adId: string, status: string) {
       };
     }
 
-    const res = await fetch(
-      `${baseUrl}/advertisements/update-approval-status/${adId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ approvalStatus: status }),
+    const res = await fetch(`${baseUrl}/settings`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
-    );
+      next: { revalidate: 0 },
+    });
 
     const data = await res.json();
 
     if (!data.success) {
       return {
         success: false,
-        message: data.message || "Failed to update advertisement status.",
+        message: data.message || "Failed to retrieve settings.",
       };
     }
 
     return {
       success: true,
-      message: data.message || "Advertisement status updated successfully.",
+      data: data.data,
     };
   } catch (error) {
-    console.error("Update ad status error:", error);
+    console.error("Get settings error:", error);
     return {
       success: false,
       message: "Something went wrong. Please try again later.",

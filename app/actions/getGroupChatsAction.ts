@@ -2,7 +2,10 @@
 
 import { cookies } from "next/headers";
 
-export async function updateAdStatusAction(adId: string, status: string) {
+export async function getGroupChatsAction(params: {
+  page?: number;
+  limit?: number;
+}) {
   try {
     const baseUrl = process.env.BASE_URL;
     const cookieStore = await cookies();
@@ -15,15 +18,20 @@ export async function updateAdStatusAction(adId: string, status: string) {
       };
     }
 
+    const { page = 1, limit = 10 } = params;
+    const queryParams = new URLSearchParams();
+    queryParams.append("page", page.toString());
+    queryParams.append("limit", limit.toString());
+
     const res = await fetch(
-      `${baseUrl}/advertisements/update-approval-status/${adId}`,
+      `${baseUrl}/chats/group-chats?${queryParams.toString()}`,
       {
-        method: "PATCH",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ approvalStatus: status }),
+        next: { revalidate: 0 },
       },
     );
 
@@ -32,16 +40,17 @@ export async function updateAdStatusAction(adId: string, status: string) {
     if (!data.success) {
       return {
         success: false,
-        message: data.message || "Failed to update advertisement status.",
+        message: data.message || "Failed to retrieve group chats.",
       };
     }
 
     return {
       success: true,
-      message: data.message || "Advertisement status updated successfully.",
+      data: data.data,
+      pagination: data.pagination,
     };
   } catch (error) {
-    console.error("Update ad status error:", error);
+    console.error("Get group chats error:", error);
     return {
       success: false,
       message: "Something went wrong. Please try again later.",

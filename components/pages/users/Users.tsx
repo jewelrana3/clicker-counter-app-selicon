@@ -17,6 +17,7 @@ import Swal from "sweetalert2";
 import { SelectItems } from "./../../share/SelectItem";
 import { Input } from "@/components/ui/input";
 import { getUsersAction } from "@/app/actions/getUsersAction";
+import { toggleUserStatusAction } from "@/app/actions/toggleUserStatusAction";
 import toast from "react-hot-toast";
 import { useDebounce } from "use-debounce";
 import { getImageUrl } from "@/lib/GetImageUrl";
@@ -69,20 +70,35 @@ export default function Users() {
       text: `You want to ${isBlocked ? "unblock" : "block"} this user!`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
+      confirmButtonColor: "#EF4444",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, Proceed",
+      cancelButtonText: "Cancel",
       customClass: {
-        confirmButton: "swal-btn",
-        cancelButton: "swal-btn",
+        confirmButton: "rounded-full px-6 py-2",
+        cancelButton: "rounded-full px-6 py-2",
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        // TODO: Implement block/unblock API call here
-        toast.success(
-          `User ${isBlocked ? "unblocked" : "blocked"} successfully.`,
-        );
-        fetchUsers(); // Refresh list
+        try {
+          const res = await toggleUserStatusAction(id);
+          if (res.success) {
+            Swal.fire({
+              title: "Success!",
+              text: res.message,
+              icon: "success",
+              confirmButtonColor: "#EF4444",
+              customClass: {
+                confirmButton: "rounded-full px-6 py-2",
+              },
+            });
+            fetchUsers();
+          } else {
+            toast.error(res.message);
+          }
+        } catch (error) {
+          toast.error("An error occurred. Please try again.");
+        }
       }
     });
   };
@@ -220,29 +236,28 @@ export default function Users() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center justify-center space-x-3">
+                    <div className="flex items-center justify-center space-x-1">
                       <UsersDetailsModal
                         userData={item}
                         trigger={
-                          <div className="text-blue-500 hover:text-blue-700 cursor-pointer p-2 transition-colors">
-                            <Info size={20} />
+                          <div className="text-blue-500 hover:bg-blue-50 rounded-full p-2 transition-colors cursor-pointer">
+                            <Info size={19} />
                           </div>
                         }
                       />
 
-                      <div className="p-2 transition-colors">
-                        {item.status === "blocked" ? (
-                          <Lock
-                            className="text-red-500 hover:text-red-700 cursor-pointer"
-                            size={20}
-                            onClick={() => handleLock(item._id, item.status)}
-                          />
+                      <div
+                        className="p-2 transition-colors group cursor-pointer"
+                        onClick={() => handleLock(item._id, item.status)}
+                      >
+                        {item.status === "inactive" ? (
+                          <div className="text-green-600 hover:text-green-700 hover:bg-green-50 rounded-full p-1 transition-colors">
+                            <Unlock size={19} />
+                          </div>
                         ) : (
-                          <Unlock
-                            className="text-gray-400 hover:text-gray-600 cursor-pointer"
-                            size={20}
-                            onClick={() => handleLock(item._id, item.status)}
-                          />
+                          <div className="text-red-500 hover:bg-red-50 rounded-full p-1 transition-colors">
+                            <Lock size={19} />
+                          </div>
                         )}
                       </div>
                     </div>

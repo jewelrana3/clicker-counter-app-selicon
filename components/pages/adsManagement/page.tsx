@@ -45,6 +45,8 @@ export default function AdsManagement() {
     active: "text-[#008F37] bg-[#00FF6226] border border-[#008F37]",
     inactive: "bg-[#FFD9D9] border border-[#E40004] text-[#E40004]",
     pending: "bg-[#FFECD7] border border-[#F48201] text-[#F48201]",
+    approved: "text-[#008F37] bg-[#00FF6226] border border-[#008F37]",
+    rejected: "bg-[#FFD9D9] border border-[#E40004] text-[#E40004]",
   };
 
   const fetchAds = useCallback(async () => {
@@ -226,7 +228,9 @@ export default function AdsManagement() {
                         />
 
                         <Select
-                          defaultValue={item.status.toLowerCase()}
+                          defaultValue={
+                            item.approvalStatus || item.status.toLowerCase()
+                          }
                           onValueChange={(value) =>
                             handleStatusUpdate(item._id, value)
                           }
@@ -238,8 +242,8 @@ export default function AdsManagement() {
                           <SelectContent>
                             <SelectGroup>
                               <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="active">Active</SelectItem>
-                              <SelectItem value="inactive">Inactive</SelectItem>
+                              <SelectItem value="approved">Approved</SelectItem>
+                              <SelectItem value="rejected">Rejected</SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>

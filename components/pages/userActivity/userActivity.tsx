@@ -10,48 +10,81 @@ import {
 } from "@/components/ui/table";
 import { Check, ClockAlert, Info, Lock, Search, Unlock } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import UserActivityDetailsModal from "./UserActivityDetailsModal";
 import Swal from "sweetalert2";
 import { Input } from "@/components/ui/input";
 import { SelectItems } from "@/components/share/SelectItem";
+import { getPostsAction } from "@/app/actions/getPostsAction";
+import { togglePostStatusAction } from "@/app/actions/togglePostStatusAction";
+import { useDebounce } from "use-debounce";
+import toast from "react-hot-toast";
+import { getImageUrl } from "@/lib/GetImageUrl";
 
-const allPost = ["All Post", "Active Post", "Block Post"];
+const allPostOptions = ["All Post", "Active Post", "Blocked Post"];
 const vibesArray = [
+  "All",
   "Great Vibes",
   "Off Vibes",
   "Charming Gentlemen",
   "Lovely Leady",
 ];
 
-const data = [
-  {
-    id: 1,
-    name: "Mohammad",
-    contact: "+1234567890",
-    email: "user@email.com",
-    privacy: "Public",
-    clicker: "Great Vibes ",
-    description: "It was very nice Momen..",
-  },
-  {
-    id: 2,
-    name: "Mohammad",
-    contact: "+1234567890",
-    email: "user@email.com",
-    privacy: "Public",
-    clicker: "Great Vibes ",
-    description: "It was very nice Momen..",
-  },
-];
-
 export default function UserActivity() {
-  const [status, setStatus] = useState([1, 2]);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch] = useDebounce(searchTerm, 500);
+  const [clickerType, setClickerType] = useState("All");
+  const [status, setStatus] = useState("All Post");
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPage: 1,
+  });
 
-  const hanldeLock = (id: number) => {
+  const fetchPosts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await getPostsAction({
+        searchTerm: debouncedSearch,
+        clickerType: clickerType === "All" ? undefined : clickerType,
+        status: status === "All Post" ? undefined : status,
+        page: pagination.page,
+        limit: pagination.limit,
+      });
+
+      if (res.success) {
+        setPosts(res.data || []);
+        if (res.pagination) {
+          setPagination((prev) => ({
+            ...prev,
+            total: res.pagination.total,
+            totalPage: res.pagination.totalPage,
+          }));
+        }
+      } else {
+        toast.error(res.message || "Failed to fetch posts");
+      }
+    } catch (error) {
+      console.error("Fetch posts error:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }, [debouncedSearch, clickerType, status, pagination.page, pagination.limit]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
+
+  const hanldeLock = async (id: string, currentStatus: string) => {
+    const isBlocked = currentStatus === "blocked";
+
     Swal.fire({
       title: "Are you sure?",
-      text: "You want to block this!",
+      text: `You want to ${isBlocked ? "unblock" : "block"} this post!`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -61,19 +94,24 @@ export default function UserActivity() {
         confirmButton: "swal-btn",
         cancelButton: "swal-btn",
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const isActive = status.includes(id);
-        if (isActive) {
-          setStatus(status.filter((item) => item !== id));
-        } else {
-          setStatus([...status, id]);
+        try {
+          const res = await togglePostStatusAction(id);
+          if (res.success) {
+            Swal.fire({
+              title: isBlocked ? "Unblocked!" : "Blocked!",
+              text: `The post has been ${isBlocked ? "unblocked" : "blocked"}.`,
+              icon: "success",
+            });
+            fetchPosts();
+          } else {
+            toast.error(res.message || "Failed to update status");
+          }
+        } catch (error) {
+          console.error("Toggle status error:", error);
+          toast.error("Something went wrong");
         }
-        Swal.fire({
-          title: "Blocked!",
-          text: "Your file has been blocked.",
-          icon: "success",
-        });
       }
     });
   };
@@ -87,11 +125,32 @@ export default function UserActivity() {
               <Search />
             </span>
 
-            <Input className="pl-10" placeholder="Search here" />
+            <Input
+              className="pl-10"
+              placeholder="Search here"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
 
-          <SelectItems select={vibesArray} placeholder="Great Vibes" />
-          <SelectItems select={allPost} placeholder="All Post" />
+          <SelectItems
+            select={vibesArray}
+            placeholder="Clicker Type"
+            value={clickerType}
+            onChange={(val: string) => {
+              setClickerType(val);
+              setPagination((prev) => ({ ...prev, page: 1 }));
+            }}
+          />
+          <SelectItems
+            select={allPostOptions}
+            placeholder="Status"
+            value={status}
+            onChange={(val: string) => {
+              setStatus(val);
+              setPagination((prev) => ({ ...prev, page: 1 }));
+            }}
+          />
         </div>
       </div>
       <Table className="mt-7">
@@ -108,65 +167,114 @@ export default function UserActivity() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell>#202258{index + 1}</TableCell>
-              <TableCell className="flex items-center gap-2">
-                <Image
-                  src="/user-activity/user-activity.png"
-                  alt="Logo"
-                  width={10}
-                  height={10}
-                  className="w-10 h-10 rounded-full"
-                />
-                {item.name}
-              </TableCell>
-
-              <TableCell>{item.contact}</TableCell>
-              <TableCell>{item.email}</TableCell>
-              <TableCell>{item.privacy}</TableCell>
-              <TableCell>{item.clicker}</TableCell>
-              <TableCell>{item.description.slice(0, 20)}...</TableCell>
-
-              <TableCell className="">
-                <div className="flex items-center  space-x-4">
-                  <div className="mt-1">
-                    {index % 2 === 0 ? (
-                      <ClockAlert />
-                    ) : (
-                      <Check className="text-green-600" />
-                    )}
-                  </div>
-                  <div>
-                    <UserActivityDetailsModal
-                      index={index}
-                      trigger={
-                        <div className="text-red-400 cursor-pointer mt-2">
-                          <Info />
-                        </div>
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    {status.includes(item.id) ? (
-                      <Lock
-                        className="text-red-400 cursor-pointer"
-                        onClick={() => hanldeLock(item.id)}
-                      />
-                    ) : (
-                      <Unlock
-                        className="cursor-pointer"
-                        onClick={() => hanldeLock(item.id)}
-                      />
-                    )}
-                  </div>
-                </div>
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center py-10">
+                Loading...
               </TableCell>
             </TableRow>
-          ))}
+          ) : posts.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center py-10">
+                No posts found
+              </TableCell>
+            </TableRow>
+          ) : (
+            posts.map((item, index) => (
+              <TableRow key={item._id}>
+                <TableCell>
+                  #{(pagination.page - 1) * pagination.limit + index + 1}
+                </TableCell>
+                <TableCell className="flex items-center gap-2">
+                  <Image
+                    src={getImageUrl(item.user?.image)}
+                    alt="User"
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  {item.user?.name || "Unknown"}
+                </TableCell>
+
+                <TableCell>{item.user?.contact || "N/A"}</TableCell>
+                <TableCell>{item.user?.email || "N/A"}</TableCell>
+                <TableCell className="capitalize">{item.privacy}</TableCell>
+                <TableCell>{item.clickerType}</TableCell>
+                <TableCell>{item.description?.slice(0, 20)}...</TableCell>
+
+                <TableCell className="">
+                  <div className="flex items-center  space-x-4">
+                    <div className="mt-1">
+                      {item.status === "active" ? (
+                        <Check className="text-green-600" />
+                      ) : (
+                        <ClockAlert className="text-yellow-600" />
+                      )}
+                    </div>
+                    <div>
+                      <UserActivityDetailsModal
+                        post={item}
+                        trigger={
+                          <div className="text-red-400 cursor-pointer mt-2">
+                            <Info />
+                          </div>
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      {item.status === "blocked" ? (
+                        <Lock
+                          className="text-red-400 cursor-pointer"
+                          onClick={() => hanldeLock(item._id, item.status)}
+                        />
+                      ) : (
+                        <Unlock
+                          className="cursor-pointer"
+                          onClick={() => hanldeLock(item._id, item.status)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
+
+      {/* Pagination Controls */}
+      {pagination.totalPage > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-8">
+          <button
+            onClick={() =>
+              setPagination((prev) => ({
+                ...prev,
+                page: Math.max(1, prev.page - 1),
+              }))
+            }
+            disabled={pagination.page === 1}
+            className="px-4 py-2 bg-gray-100 rounded-lg disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>
+            Page {pagination.page} of {pagination.totalPage}
+          </span>
+          <button
+            onClick={() =>
+              setPagination((prev) => ({
+                ...prev,
+                page: Math.min(prev.totalPage, prev.page + 1),
+              }))
+            }
+            disabled={pagination.page === pagination.totalPage}
+            className="px-4 py-2 bg-gray-100 rounded-lg disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </>
   );
 }
