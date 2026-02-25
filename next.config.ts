@@ -19,8 +19,6 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "5mb",
     },
-    // @ts-ignore
-    allowedDevOrigins: ["http://10.10.7.54:3000", "http://localhost:3000"],
   },
 };
 
