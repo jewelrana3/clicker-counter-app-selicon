@@ -13,6 +13,7 @@ import Swal from "sweetalert2";
 import UserModal from "./UserModal";
 import { toggleGroupChatStatusAction } from "@/app/actions/toggleGroupChatStatusAction";
 import toast from "react-hot-toast";
+import { getImageUrl } from "@/lib/GetImageUrl";
 
 export default function GroupChatTable({
   data,
@@ -29,6 +30,7 @@ export default function GroupChatTable({
   setPage: (page: number) => void;
   refreshData: () => void;
 }) {
+  console.log("data ========>>>", data);
   const handleLock = (id: string, currentStatus: string) => {
     const isActive = currentStatus === "active";
     Swal.fire({
@@ -118,7 +120,7 @@ export default function GroupChatTable({
                   <TableCell>
                     <div className="relative w-10 h-10 overflow-hidden rounded-full border border-gray-100">
                       <Image
-                        src={item.avatarUrl || "/group-chat/image.png"}
+                        src={getImageUrl(item?.avatarUrl)}
                         alt={item.chatName}
                         fill
                         className="object-cover"

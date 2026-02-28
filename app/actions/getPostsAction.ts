@@ -9,6 +9,8 @@ export async function getPostsAction(params: {
   status?: string;
   page?: number;
   limit?: number;
+  startDate?: string;
+  endDate?: string;
 }) {
   try {
     const baseUrl = process.env.BASE_URL;
@@ -22,7 +24,15 @@ export async function getPostsAction(params: {
       };
     }
 
-    const { searchTerm, clickerType, status, page = 1, limit = 10 } = params;
+    const {
+      searchTerm,
+      clickerType,
+      status,
+      page = 1,
+      limit = 10,
+      startDate,
+      endDate,
+    } = params;
 
     const queryParams = new URLSearchParams();
     if (searchTerm) queryParams.append("searchTerm", searchTerm);
@@ -37,6 +47,9 @@ export async function getPostsAction(params: {
         status.toLowerCase().includes("active") ? "active" : "inactive",
       );
     }
+
+    if (startDate) queryParams.append("startDate", startDate);
+    if (endDate) queryParams.append("endDate", endDate);
 
     queryParams.append("page", page.toString());
     queryParams.append("limit", limit.toString());

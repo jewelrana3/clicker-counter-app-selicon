@@ -37,17 +37,9 @@ export default function UsersHomePage() {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800">New Users</h2>
         <div className="flex items-center space-x-4">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#E40004]" />
-            <span className="text-sm font-medium">200</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#F97316]" />
-            <span className="text-sm font-medium">50</span>
-          </div>
           <Link
             href="/users"
-            className="text-[#008F37] text-sm font-semibold hover:underline"
+            className="text-[#E40004] text-sm font-semibold hover:underline"
           >
             See More
           </Link>

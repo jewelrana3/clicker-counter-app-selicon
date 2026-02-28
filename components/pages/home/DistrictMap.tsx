@@ -8,7 +8,7 @@ import {
 } from "@react-google-maps/api";
 import { useState, useRef, useEffect } from "react";
 import { getPostsAction } from "@/app/actions/getPostsAction";
-import { Loader2 } from "lucide-react";
+import { Loader2, Calendar, ChevronDown } from "lucide-react";
 
 const containerStyle = {
   width: "100%",
@@ -20,83 +20,6 @@ const defaultCenter = {
   lng: 90.4125, // Dhaka, Bangladesh
 };
 
-const mapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#f5f5f5" }] },
-  { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] },
-  {
-    featureType: "administrative.land_parcel",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#bdbdbd" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "geometry",
-    stylers: [{ color: "#eeeeee" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#757575" }],
-  },
-  {
-    featureType: "poi.park",
-    elementType: "geometry",
-    stylers: [{ color: "#e5e5e5" }],
-  },
-  {
-    featureType: "poi.park",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#9e9e9e" }],
-  },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [{ color: "#ffffff" }],
-  },
-  {
-    featureType: "road.arterial",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#757575" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [{ color: "#dadada" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#616161" }],
-  },
-  {
-    featureType: "road.local",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#9e9e9e" }],
-  },
-  {
-    featureType: "transit.line",
-    elementType: "geometry",
-    stylers: [{ color: "#e5e5e5" }],
-  },
-  {
-    featureType: "transit.station",
-    elementType: "geometry",
-    stylers: [{ color: "#eeeeee" }],
-  },
-  {
-    featureType: "water",
-    elementType: "geometry",
-    stylers: [{ color: "#c9c9c9" }],
-  },
-  {
-    featureType: "water",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#9e9e9e" }],
-  },
-];
-
 export default function DistrictMap() {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -105,13 +28,48 @@ export default function DistrictMap() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<number | null>(null);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const mapRef = useRef<any>(null);
+  const datePickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target as Node)
+      ) {
+        setShowDatePicker(false);
+      }
+    };
+
+    if (showDatePicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDatePicker]);
 
   useEffect(() => {
     const fetchLocations = async () => {
       setLoading(true);
       try {
-        const res = await getPostsAction({ limit: 100 }); // Get a good number of locations
+        const payload: any = { limit: 100 };
+
+        if (startDate) {
+          payload.startDate = new Date(startDate).toISOString();
+        }
+
+        if (endDate) {
+          const endD = new Date(endDate);
+          endD.setUTCHours(23, 59, 59, 999);
+          payload.endDate = endD.toISOString();
+        }
+
+        const res = await getPostsAction(payload); // Get a good number of locations
         if (res.success) {
           // Filter only posts with valid coordinates
           const validPosts = (res.data || []).filter(
@@ -140,19 +98,99 @@ export default function DistrictMap() {
       }
     };
 
-    fetchLocations();
-  }, [isLoaded]);
+    if (isLoaded) {
+      const timer = setTimeout(() => {
+        fetchLocations();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded, startDate, endDate]);
 
   const onMapLoad = (map: any) => {
     mapRef.current = map;
   };
 
+  const clearDates = () => {
+    setStartDate("");
+    setEndDate("");
+  };
+
   if (!isLoaded) return <div>Loading Google Maps...</div>;
+
+  const displayDateText = () => {
+    if (startDate && endDate) {
+      return `${startDate} to ${endDate}`;
+    } else if (startDate) {
+      return `From ${startDate}`;
+    } else if (endDate) {
+      return `Until ${endDate}`;
+    }
+    return "Filter by Date";
+  };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100/50">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h2 className="text-xl font-semibold text-gray-800">Activity Map</h2>
+        <div className="relative" ref={datePickerRef}>
+          <button
+            type="button"
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-sm transition-colors ${
+              startDate || endDate
+                ? "border-red-500/30 bg-red-50/30 text-red-700 font-semibold"
+                : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 font-medium"
+            }`}
+          >
+            <Calendar className="w-4 h-4 ml-[-2px]" />
+            <span>{displayDateText()}</span>
+            <ChevronDown
+              className={`w-4 h-4 ml-1 transition-transform ${showDatePicker ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {showDatePicker && (
+            <div className="absolute right-0 mt-2 p-4 bg-white border border-gray-100 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] z-50 min-w-[300px] origin-top-right animate-in fade-in slide-in-from-top-2">
+              <div className="space-y-4">
+                <div className="space-y-1.5 focus-within:text-red-600 transition-colors">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 bg-gray-50/50 text-gray-700 font-medium"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-1.5 focus-within:text-red-600 transition-colors">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"></span>
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 bg-gray-50/50 text-gray-700 font-medium"
+                    value={endDate}
+                    min={startDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="pt-3 border-t border-gray-100 flex mt-2">
+                  <button
+                    onClick={clearDates}
+                    className="w-full px-4 py-2 text-xs font-semibold text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+                  >
+                    Clear Filter
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       <div className="rounded-xl overflow-hidden border border-gray-100 relative min-h-[480px] shadow-inner">
         {loading && (
@@ -169,8 +207,6 @@ export default function DistrictMap() {
           zoom={10}
           onLoad={onMapLoad}
           options={{
-            styles: mapStyle,
-            disableDefaultUI: true,
             zoomControl: true,
             gestureHandling: "hover",
           }}

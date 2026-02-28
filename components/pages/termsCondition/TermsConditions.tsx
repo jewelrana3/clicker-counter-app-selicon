@@ -25,6 +25,7 @@ export default function TermsConditionsPage() {
       } else {
         toast.error(result.message);
       }
+      console.log("result ========>>>", result);
     } catch (error) {
       toast.error("Failed to fetch terms and conditions.");
     } finally {
@@ -48,6 +49,8 @@ export default function TermsConditionsPage() {
         type: "terms-and-conditions",
         content,
       });
+
+      console.log("result ========>>>", result);
 
       if (result.success) {
         toast.success(result.message);

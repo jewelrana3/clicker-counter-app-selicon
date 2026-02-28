@@ -75,7 +75,7 @@ export default function NearBy() {
             htmlFor="range"
             className="text-sm font-semibold text-gray-600 ml-1"
           >
-            Range (in meters)
+            Range (in kilometers)
           </Label>
           <Input
             id="range"
