@@ -47,6 +47,7 @@ export default function Profile() {
           if (result.data.image) {
             setImagePreview(getImageUrl(result.data.image));
           }
+          console.log("result.data ==========>>>", result.data);
         } else {
           toast.error(result.message);
         }
@@ -98,6 +99,10 @@ export default function Profile() {
     if (file) {
       formData.append("image", file);
     }
+
+    // Debugging FormData
+    const formEntries = Object.fromEntries(formData.entries());
+    console.log("Submitting FormData ======>>> ", formEntries);
 
     try {
       const result = await updateProfileAction(formData);

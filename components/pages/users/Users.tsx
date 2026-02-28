@@ -46,6 +46,8 @@ export default function Users() {
         limit: 10,
       });
 
+      console.log("result ==========>>>", result);
+
       if (result.success) {
         setUsers(result.data || []);
         setTotalPage(result.pagination?.totalPage || 1);

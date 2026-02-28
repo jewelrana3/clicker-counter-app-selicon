@@ -30,7 +30,7 @@ export default function GroupChatTable({
   setPage: (page: number) => void;
   refreshData: () => void;
 }) {
-  console.log("data ========>>>", data);
+  // console.log("data ========>>>", data);
   const handleLock = (id: string, currentStatus: string) => {
     const isActive = currentStatus === "active";
     Swal.fire({

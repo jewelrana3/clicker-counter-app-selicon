@@ -3,8 +3,8 @@
 import { cookies } from "next/headers";
 
 export async function loginAction(formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const email = (formData.get("email") as string)?.trim();
+  const password = (formData.get("password") as string)?.trim();
 
   // Validate inputs
   if (!email || !password) {
