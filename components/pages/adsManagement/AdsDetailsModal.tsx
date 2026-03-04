@@ -10,15 +10,45 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/GetImageUrl";
+import { useState } from "react";
+import { updateAdStatusAction } from "@/app/actions/updateAdStatusAction";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
 export default function AdsDetailsModal({
   trigger,
   ad,
+  fetchAds,
 }: {
   trigger: React.ReactNode;
   ad: any;
+  fetchAds: () => void;
 }) {
+  const [isUpdating, setIsUpdating] = useState(false);
+
   if (!ad) return null;
+
+  const handleStatusUpdate = async (newStatus: string) => {
+    setIsUpdating(true);
+    try {
+      const result = await updateAdStatusAction(ad._id, newStatus);
+      if (result.success) {
+        toast.success(result.message);
+        fetchAds();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("Failed to update status.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const isActionDisabled =
+    isUpdating ||
+    ad.approvalStatus.toLowerCase() === "approved" ||
+    ad.approvalStatus.toLowerCase() === "rejected";
 
   return (
     <Dialog>
@@ -155,11 +185,27 @@ export default function AdsDetailsModal({
 
           {/* Buttons */}
           <div className="p-6 flex justify-between gap-4 sticky bottom-0 bg-white border-t">
-            <Button className="w-1/2 py-2 border border-red-500 text-red-500 rounded-full hover:bg-red-50 bg-white font-medium">
-              Reject
+            <Button
+              onClick={() => handleStatusUpdate("rejected")}
+              disabled={isActionDisabled}
+              className="w-1/2 py-2 border border-red-500 text-red-500 rounded-full hover:bg-red-50 bg-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isUpdating ? (
+                <Loader2 className="animate-spin h-4 w-4" />
+              ) : (
+                "Reject"
+              )}
             </Button>
-            <Button className="w-1/2 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 font-medium">
-              Confirm
+            <Button
+              onClick={() => handleStatusUpdate("approved")}
+              disabled={isActionDisabled}
+              className="w-1/2 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isUpdating ? (
+                <Loader2 className="animate-spin h-4 w-4" />
+              ) : (
+                "Approve"
+              )}
             </Button>
           </div>
         </div>

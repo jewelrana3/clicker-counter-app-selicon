@@ -41,6 +41,12 @@ export const sidebarMenu = [
   { id: 7, label: "Change Password", icon: UserPen, path: "/change-password" },
 
   { id: 8, label: "Nearby Setting", icon: MapPinned, path: "/near-by" },
+  {
+    id: 9,
+    label: "Help And Support",
+    icon: MessagesSquare,
+    path: "/help-and-support",
+  },
 ];
 
 export default function Sidebar() {

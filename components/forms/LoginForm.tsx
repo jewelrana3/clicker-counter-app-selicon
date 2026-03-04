@@ -85,10 +85,10 @@ export default function LoginForm() {
       </div>
 
       <div className="mt-1 flex flex-col sm:flex-row sm:items-center justify-between">
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <Checkbox id="remember-me" name="remember-me" value="true" />
           <p className="text-color">Remember Password</p>
-        </div>
+        </div> */}
         <div>
           <Link
             href="/forgot-password"

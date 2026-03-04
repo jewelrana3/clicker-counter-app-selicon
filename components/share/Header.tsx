@@ -27,8 +27,9 @@ const pathnames = [
   },
   { id: 7, label: "Change Password", path: "/change-password" },
   { id: 8, label: "Nearby Setting", path: "/near-by" },
-  { id: 9, label: "Notifications", path: "/notifications" },
-  { id: 10, label: "Profile", path: "/profile" },
+  { id: 9, label: "Help And Support", path: "/help-and-support" },
+  { id: 10, label: "Notifications", path: "/notifications" },
+  { id: 11, label: "Profile", path: "/profile" },
 ];
 
 export default function Header() {

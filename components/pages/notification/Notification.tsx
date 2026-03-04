@@ -25,10 +25,10 @@ const Notification = () => {
           prev.map((n) => (n._id === item._id ? { ...n, isRead: true } : n)),
         );
       }
-      router.push("/user-activity");
+      router.push("/ads-management");
     } catch (error) {
       console.error("Error handling notification click:", error);
-      router.push("/user-activity");
+      router.push("/ads-management");
     }
   };
 

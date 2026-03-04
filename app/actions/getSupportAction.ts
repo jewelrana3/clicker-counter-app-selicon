@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { handleAuthError } from "@/lib/handleAuthError";
 
-export async function getAdsAction({
+export async function getSupportAction({
   page = 1,
   limit = 10,
   search = "",
@@ -33,19 +33,16 @@ export async function getAdsAction({
 
     if (search) queryParams.append("searchTerm", search);
     if (status && status !== "All")
-      queryParams.append("approvalStatus", status.toLowerCase());
+      queryParams.append("status", status.toLowerCase());
 
-    const res = await fetch(
-      `${baseUrl}/advertisements/all?${queryParams.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        next: { revalidate: 0 },
+    const res = await fetch(`${baseUrl}/supports?${queryParams.toString()}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
-    );
+      next: { revalidate: 0 },
+    });
 
     const data = await res.json();
     await handleAuthError(data);
@@ -53,7 +50,7 @@ export async function getAdsAction({
     if (!data.success) {
       return {
         success: false,
-        message: data.message || "Failed to retrieve advertisements data.",
+        message: data.message || "Failed to retrieve support data.",
       };
     }
 
@@ -63,7 +60,7 @@ export async function getAdsAction({
       pagination: data.pagination,
     };
   } catch (error) {
-    console.error("Get ads error:", error);
+    console.error("Get support error:", error);
     return {
       success: false,
       message: "Something went wrong. Please try again later.",

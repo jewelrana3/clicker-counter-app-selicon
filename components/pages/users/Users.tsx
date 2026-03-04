@@ -23,7 +23,7 @@ import { useDebounce } from "use-debounce";
 import { getImageUrl } from "@/lib/GetImageUrl";
 
 const roleOptions = ["All Users", "User", "Advertiser"];
-const statusOptions = ["All", "Active", "Inactive", "Blocked"];
+const statusOptions = ["All", "Active", "Inactive"];
 
 export default function Users() {
   const [users, setUsers] = useState<any[]>([]);
@@ -46,7 +46,7 @@ export default function Users() {
         limit: 10,
       });
 
-      console.log("result ==========>>>", result);
+      // console.log("result ==========>>>", result);
 
       if (result.success) {
         setUsers(result.data || []);
@@ -152,7 +152,7 @@ export default function Users() {
             <TableRow>
               <TableHead className="w-16">S.No</TableHead>
               <TableHead>User Name</TableHead>
-              <TableHead>Contact</TableHead>
+              <TableHead>Role</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Reg. Date</TableHead>
               <TableHead>Gender</TableHead>
@@ -209,7 +209,7 @@ export default function Users() {
                   </TableCell>
 
                   <TableCell className="text-gray-600">
-                    {item.contact || "N/A"}
+                    {item.role || "N/A"}
                   </TableCell>
                   <TableCell className="text-gray-600">{item.email}</TableCell>
                   <TableCell className="text-gray-600">
