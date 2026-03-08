@@ -5,7 +5,7 @@ import { handleAuthError } from "@/lib/handleAuthError";
 
 export async function updatePlanAction(
   planId: string,
-  payload: { name: string; price: number },
+  payload: { name: string; price: number; description?: string },
 ) {
   try {
     const baseUrl = process.env.BASE_URL;

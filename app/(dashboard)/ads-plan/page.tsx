@@ -105,7 +105,7 @@ export default function AdsPlanPage() {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800 capitalize group-hover:text-red-600 transition-colors">
-                    {plan.name}
+                    {plan?.description}
                   </h2>
                   <div className="h-1 w-12 bg-red-500 rounded-full mt-1 group-hover:w-full transition-all duration-500"></div>
                 </div>
@@ -140,13 +140,15 @@ export default function AdsPlanPage() {
                   </span>
                 </div>
 
-                <div className="bg-gray-50 rounded-2xl p-4 flex items-center justify-between">
-                  <span className="text-gray-500 font-medium">
-                    Included Duration
-                  </span>
-                  <span className="text-black font-bold bg-white px-4 py-1 rounded-full shadow-sm text-sm border border-gray-100">
-                    {plan.name}
-                  </span>
+                <div className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500 font-medium">
+                      Included Duration
+                    </span>
+                    <span className="text-black font-bold bg-white px-4 py-1 rounded-full shadow-sm text-sm border border-gray-100 capitalize">
+                      {plan.name}
+                    </span>
+                  </div>
                 </div>
               </div>
 

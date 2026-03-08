@@ -32,11 +32,17 @@ export default function AdsControlModal({
 }: {
   trigger: React.ReactNode;
   id?: string;
-  initialData?: { _id: string; name: string; price: number };
+  initialData?: {
+    _id: string;
+    name: string;
+    price: number;
+    description?: string;
+  };
   onSuccess?: () => void;
 }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -44,15 +50,17 @@ export default function AdsControlModal({
     if (initialData) {
       setName(initialData.name);
       setPrice(initialData.price.toString());
+      setDescription(initialData.description || "");
     } else {
       setName("");
       setPrice("");
+      setDescription("");
     }
   }, [initialData, open]);
 
   const handleSubmit = async () => {
     const numericPrice = Number(price);
-    if (!name || !price || isNaN(numericPrice)) {
+    if (!name || !price || isNaN(numericPrice) || !description) {
       toast.error("Please fill in all fields with valid data.");
       return;
     }
@@ -62,6 +70,7 @@ export default function AdsControlModal({
       const payload = {
         name,
         price: numericPrice,
+        description,
       };
 
       const result = initialData
@@ -74,6 +83,7 @@ export default function AdsControlModal({
         if (!initialData) {
           setName("");
           setPrice("");
+          setDescription("");
         }
         if (onSuccess) onSuccess();
       } else {
@@ -115,6 +125,18 @@ export default function AdsControlModal({
                 <SelectItem value="monthly">Monthly</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-[#636363] font-medium text-lg ml-1">
+              Name
+            </Label>
+            <Input
+              placeholder="Enter plan name"
+              className="h-12 rounded-full px-6 border border-gray-200 focus:ring-2 focus:ring-red-500/20"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
