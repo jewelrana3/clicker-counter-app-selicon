@@ -8,7 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Info, Search, Loader2 } from "lucide-react";
+import moment from "moment";
+import { Info, Search, Loader2, Download } from "lucide-react";
 import AdsDetailsModal from "./AdsDetailsModal";
 import Image from "next/image";
 import { SelectItems } from "@/components/share/SelectItem";
@@ -18,8 +19,10 @@ import { useEffect, useState, useCallback } from "react";
 import { useDebounce } from "use-debounce";
 import { getAdsAction } from "@/app/actions/getAdsAction";
 import { updateAdStatusAction } from "@/app/actions/updateAdStatusAction";
+import { exportAdsExcelAction } from "@/app/actions/exportAdsExcelAction";
 import { getImageUrl } from "@/lib/GetImageUrl";
 import toast from "react-hot-toast";
+import { FaFileExcel } from "react-icons/fa6";
 
 const statusOptions = ["All", "Approved", "Rejected", "Pending"];
 
@@ -31,6 +34,7 @@ export default function AdsManagement() {
   const [status, setStatus] = useState("All");
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const statusColor: Record<string, string> = {
     active: "text-[#008F37] bg-[#00FF6226] border border-[#008F37]",
@@ -93,17 +97,54 @@ export default function AdsManagement() {
     }
   };
 
+  const handleDownloadExcel = async () => {
+    try {
+      setIsDownloading(true);
+      const loadingToast = toast.loading("Preparing Excel file...");
+
+      const result = await exportAdsExcelAction();
+
+      toast.dismiss(loadingToast);
+
+      if (result.success && result.data) {
+        // Convert base64 to blob
+        const byteCharacters = atob(result.data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download =
+          result.filename ||
+          `advertisements-${new Date().toISOString().split("T")[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        toast.success("Excel downloaded successfully");
+      } else {
+        toast.error(result.message || "Failed to download excel");
+      }
+    } catch (error) {
+      toast.error("An error occurred during download");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <>
       <div className="flex justify-end space-x-4">
-        <div>
-          <Link href="/ads-plan">
-            <button className="bg-[#E40004] text-white p-3 px-6 rounded-full cursor-pointer hover:bg-opacity-90 transition-all font-medium">
-              Ads Plan
-            </button>
-          </Link>
-        </div>
-        <div className="flex gap-5 w-[60%]">
+        <div className="flex gap-5 w-[40%]">
           <div className="w-full relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               <Search size={20} />
@@ -124,6 +165,26 @@ export default function AdsManagement() {
               onChange={handleStatusChange}
             />
           </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleDownloadExcel}
+            disabled={isDownloading}
+            className={`bg-[#107C41] text-white p-3 rounded-full cursor-pointer hover:bg-opacity-90 transition-all flex items-center justify-center ${isDownloading ? "opacity-70 cursor-not-allowed" : ""}`}
+            title="Download Excel"
+          >
+            {isDownloading ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : (
+              <FaFileExcel size={20} />
+            )}
+          </button>
+          <Link href="/ads-plan">
+            <button className="bg-[#E40004] text-white p-3 px-6 rounded-full cursor-pointer hover:bg-opacity-90 transition-all font-medium">
+              Ads Plan
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -188,10 +249,10 @@ export default function AdsManagement() {
                       ${item.price}
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
-                      {new Date(item.startAt).toLocaleDateString()}
+                      {moment(item.startAt).format("LL")}
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
-                      {new Date(item.endAt).toLocaleDateString()}
+                      {moment(item.endAt).format("LL")}
                     </TableCell>
                     <TableCell className="text-center">
                       {item.reachCount}
