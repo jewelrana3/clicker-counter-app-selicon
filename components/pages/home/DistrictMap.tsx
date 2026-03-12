@@ -8,7 +8,10 @@ import {
 } from "@react-google-maps/api";
 import { useState, useRef, useEffect } from "react";
 import { getPostsAction } from "@/app/actions/getPostsAction";
+import { exportPostsExcelAction } from "@/app/actions/exportPostsExcelAction";
 import { Loader2, Calendar, ChevronDown } from "lucide-react";
+import toast from "react-hot-toast";
+import { FaFileExcel } from "react-icons/fa6";
 
 const containerStyle = {
   width: "100%",
@@ -31,6 +34,7 @@ export default function DistrictMap() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const mapRef = useRef<any>(null);
   const datePickerRef = useRef<HTMLDivElement>(null);
 
@@ -128,68 +132,127 @@ export default function DistrictMap() {
     return "Filter by Date";
   };
 
+  const handleDownloadExcel = async () => {
+    try {
+      setIsDownloading(true);
+      const loadingToast = toast.loading("Preparing Excel file...");
+
+      const result = await exportPostsExcelAction();
+
+      toast.dismiss(loadingToast);
+
+      if (result.success && result.data) {
+        // Convert base64 to blob
+        const byteCharacters = atob(result.data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download =
+          result.filename ||
+          `activities-${new Date().toISOString().split("T")[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        toast.success("Excel downloaded successfully");
+      } else {
+        toast.error(result.message || "Failed to download excel");
+      }
+    } catch (error) {
+      toast.error("An error occurred during download");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100/50">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h2 className="text-xl font-semibold text-gray-800">Activity Map</h2>
-        <div className="relative" ref={datePickerRef}>
-          <button
-            type="button"
-            onClick={() => setShowDatePicker(!showDatePicker)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-sm transition-colors ${
-              startDate || endDate
-                ? "border-red-500/30 bg-red-50/30 text-red-700 font-semibold"
-                : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 font-medium"
-            }`}
-          >
-            <Calendar className="w-4 h-4 ml-[-2px]" />
-            <span>{displayDateText()}</span>
-            <ChevronDown
-              className={`w-4 h-4 ml-1 transition-transform ${showDatePicker ? "rotate-180" : ""}`}
-            />
-          </button>
+        <div className="flex items-center gap-3">
+          <div className="relative" ref={datePickerRef}>
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-sm transition-colors ${
+                startDate || endDate
+                  ? "border-red-500/30 bg-red-50/30 text-red-700 font-semibold"
+                  : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 font-medium"
+              }`}
+            >
+              <Calendar className="w-4 h-4 ml-[-2px]" />
+              <span>{displayDateText()}</span>
+              <ChevronDown
+                className={`w-4 h-4 ml-1 transition-transform ${showDatePicker ? "rotate-180" : ""}`}
+              />
+            </button>
 
-          {showDatePicker && (
-            <div className="absolute right-0 mt-2 p-4 bg-white border border-gray-100 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] z-50 min-w-[300px] origin-top-right animate-in fade-in slide-in-from-top-2">
-              <div className="space-y-4">
-                <div className="space-y-1.5 focus-within:text-red-600 transition-colors">
-                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 bg-gray-50/50 text-gray-700 font-medium"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                  />
-                </div>
+            {showDatePicker && (
+              <div className="absolute right-0 mt-2 p-4 bg-white border border-gray-100 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] z-50 min-w-[300px] origin-top-right animate-in fade-in slide-in-from-top-2">
+                <div className="space-y-4">
+                  <div className="space-y-1.5 focus-within:text-red-600 transition-colors">
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 bg-gray-50/50 text-gray-700 font-medium"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
 
-                <div className="space-y-1.5 focus-within:text-red-600 transition-colors">
-                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"></span>
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 bg-gray-50/50 text-gray-700 font-medium"
-                    value={endDate}
-                    min={startDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                  />
-                </div>
+                  <div className="space-y-1.5 focus-within:text-red-600 transition-colors">
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"></span>
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 bg-gray-50/50 text-gray-700 font-medium"
+                      value={endDate}
+                      min={startDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
 
-                <div className="pt-3 border-t border-gray-100 flex mt-2">
-                  <button
-                    onClick={clearDates}
-                    className="w-full px-4 py-2 text-xs font-semibold text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
-                  >
-                    Clear Filter
-                  </button>
+                  <div className="pt-3 border-t border-gray-100 flex mt-2">
+                    <button
+                      onClick={clearDates}
+                      className="w-full px-4 py-2 text-xs font-semibold text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      Clear Filter
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={handleDownloadExcel}
+            disabled={isDownloading}
+            className={`bg-[#107C41] text-white p-2.5 rounded-lg cursor-pointer hover:bg-opacity-90 transition-all flex items-center justify-center ${isDownloading ? "opacity-70 cursor-not-allowed" : ""}`}
+            title="Download Excel"
+          >
+            {isDownloading ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <FaFileExcel size={18} />
+            )}
+          </button>
         </div>
       </div>
       <div className="rounded-xl overflow-hidden border border-gray-100 relative min-h-[480px] shadow-inner">

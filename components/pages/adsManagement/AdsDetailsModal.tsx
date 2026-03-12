@@ -13,7 +13,7 @@ import { getImageUrl } from "@/lib/GetImageUrl";
 import { useState } from "react";
 import { updateAdStatusAction } from "@/app/actions/updateAdStatusAction";
 import toast from "react-hot-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 export default function AdsDetailsModal({
   trigger,
@@ -25,6 +25,7 @@ export default function AdsDetailsModal({
   fetchAds: () => void;
 }) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   if (!ad) return null;
 
@@ -82,15 +83,25 @@ export default function AdsDetailsModal({
           </div>
 
           {/* Main Image */}
-          <div className="w-full bg-gray-50 py-4">
-            <div className="relative w-[80%] aspect-video mx-auto">
+          <div className="w-full bg-gray-50 py-4 relative">
+            <div
+              className={`relative w-[80%] aspect-video mx-auto ${ad.image ? "cursor-pointer group" : ""}`}
+              onClick={() => ad.image && setIsFullscreen(true)}
+            >
               {ad.image ? (
-                <Image
-                  src={getImageUrl(ad.image)}
-                  fill
-                  alt={ad.title}
-                  className="rounded-lg object-cover"
-                />
+                <>
+                  <Image
+                    src={getImageUrl(ad.image)}
+                    fill
+                    alt={ad.title}
+                    className="rounded-lg object-contain"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors rounded-lg flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 bg-black/60 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-opacity shadow-sm">
+                      View Full Screen
+                    </span>
+                  </div>
+                </>
               ) : (
                 <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
                   No Ad Image
@@ -210,6 +221,35 @@ export default function AdsDetailsModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* Full Screen Image Overlay */}
+      {isFullscreen && ad.image && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={() => setIsFullscreen(false)}
+        >
+          <button
+            className="absolute top-4 right-4 z-[101] text-white hover:text-gray-300 bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFullscreen(false);
+            }}
+          >
+            <X size={24} />
+          </button>
+          <div
+            className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
+          >
+            <Image
+              src={getImageUrl(ad.image)}
+              fill
+              alt={ad.title}
+              className="object-contain"
+            />
+          </div>
+        </div>
+      )}
     </Dialog>
   );
 }

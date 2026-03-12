@@ -12,6 +12,8 @@ import { getImageUrl } from "@/lib/GetImageUrl";
 import { togglePostStatusAction } from "@/app/actions/togglePostStatusAction";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import { X } from "lucide-react";
 
 export default function UserActivityDetailsModal({
   trigger,
@@ -22,6 +24,8 @@ export default function UserActivityDetailsModal({
   post: any;
   onSuccess?: () => void;
 }) {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const handleToggleStatus = async () => {
     const isCurrentlyActive = post.status === "active";
 
@@ -108,14 +112,27 @@ export default function UserActivityDetailsModal({
             <h1 className="mb-2 font-medium">Moments</h1>
             <div className="grid grid-cols-4 gap-3">
               {post.photos?.map((photo: string, idx: number) => (
-                <Image
+                <div
                   key={idx}
-                  src={getImageUrl(photo)}
-                  width={150}
-                  height={150}
-                  alt={`Moment ${idx + 1}`}
-                  className="w-full h-24 object-cover rounded-md"
-                />
+                  className="relative group cursor-pointer"
+                  onClick={() => setSelectedImage(getImageUrl(photo))}
+                >
+                  <Image
+                    src={getImageUrl(photo)}
+                    fill
+                    alt={`Moment ${idx + 1}`}
+                    className="object-cover rounded-md"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  {/* Aspect ratio container since we changed Image to layout="fill" */}
+                  <div className="pb-[100%] w-full"></div>
+
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-md flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 bg-black/60 text-white px-2 py-1 rounded-full text-xs font-medium transition-opacity shadow-sm">
+                      View
+                    </span>
+                  </div>
+                </div>
               ))}
               {(!post.photos || post.photos.length === 0) && (
                 <p className="text-sm text-gray-400 col-span-4">
@@ -170,6 +187,35 @@ export default function UserActivityDetailsModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* Full Screen Image Overlay */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-100 bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button
+            className="absolute top-4 right-4 z-101 text-white hover:text-gray-300 bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImage(null);
+            }}
+          >
+            <X size={24} />
+          </button>
+          <div
+            className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
+          >
+            <Image
+              src={selectedImage}
+              fill
+              alt="Full screen moment"
+              className="object-contain"
+            />
+          </div>
+        </div>
+      )}
     </Dialog>
   );
 }
